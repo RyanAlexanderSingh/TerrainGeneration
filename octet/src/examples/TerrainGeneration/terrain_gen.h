@@ -4,15 +4,19 @@
 //
 // Modular Framework for OpenGLES2 rendering on multiple platforms.
 //
+
+#include "ppm.h";
 namespace octet {
   /// Scene containing a box with octet.
-  class TerrainGeneration : public app {
+  class terrain_gen : public app {
     // scene for drawing box
     ref<visual_scene> app_scene;
   public:
     /// this is called when we construct the class before everything is initialised.
-    TerrainGeneration(int argc, char **argv) : app(argc, argv) {
+    terrain_gen(int argc, char **argv) : app(argc, argv) {
     }
+
+
 
     /// this is called once OpenGL is initialized
     void app_init() {
@@ -24,6 +28,9 @@ namespace octet {
       scene_node *node = new scene_node();
       app_scene->add_child(node);
       app_scene->add_mesh_instance(new mesh_instance(node, box, red));
+
+      int h = 2048, w = 2048;
+
     }
 
     /// this is called to draw the world
@@ -42,6 +49,9 @@ namespace octet {
       scene_node *node = app_scene->get_mesh_instance(0)->get_node();
       node->rotate(1, vec3(1, 0, 0));
       node->rotate(1, vec3(0, 1, 0));
+
+      bool wireframe = is_key_down(key_space);
+      if (wireframe) printf("test");
 
       if (is_key_down(key_esc)){
         exit(1);
