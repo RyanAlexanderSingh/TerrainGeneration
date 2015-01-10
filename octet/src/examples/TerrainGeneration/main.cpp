@@ -11,9 +11,9 @@
 
 #include "../../octet.h"
 
-#include "terrain_gen.h"
 #include "perlin.h"
 #include "ppm.h"
+#include "terrain_gen.h"
 
 /// Create a box with octet
 int main(int argc, char **argv) {
