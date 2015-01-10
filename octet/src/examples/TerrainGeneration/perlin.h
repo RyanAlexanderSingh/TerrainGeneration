@@ -1,3 +1,10 @@
+////////////////////////////////////////////////////////////////////////////////
+//
+// (C) Ryan Singh and Himanshu Chablani
+//
+// Modular Framework for OpenGLES2 rendering on multiple platforms.
+//
+
 namespace octet {
   /// Scene containing a box with octet.
   class perlin : public resource {

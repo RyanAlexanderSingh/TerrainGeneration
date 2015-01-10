@@ -33,13 +33,15 @@ namespace octet {
       r.resize(size);
       b.resize(size);
       g.resize(size);
+
+      write("test");
     }
 
     void read(std::string &fname){
       
     }
 
-    void write(std::string &fname){
+    void write(std::string fname){
       std::ofstream input(fname.c_str(), std::ios::out | std::ios::binary);
       if (input.is_open()){
 
@@ -60,7 +62,6 @@ namespace octet {
         }
       }
       else {
-        //std::cout << "Error. Unable to open " << fname << std::endl;
         printf("Unable to open file: %s", fname);
       }
       input.close();

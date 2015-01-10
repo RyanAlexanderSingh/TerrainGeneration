@@ -1,14 +1,16 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-// (C) Andy Thomason 2012-2014
+// (C) Ryan Singh and Himanshu Chablani
 //
 // Modular Framework for OpenGLES2 rendering on multiple platforms.
 //
 namespace octet {
   /// Scene containing a box with octet.
   class terrain_gen : public app {
+    
+    ppm image;
 
-    //ppm _image;
+    perlin pn;
     // scene for drawing box
     ref<visual_scene> app_scene;
   public:
@@ -21,8 +23,10 @@ namespace octet {
       app_scene = new visual_scene();
       app_scene->create_default_camera_and_lights();
 
-      int h = 450, w = 600;
+      int height = 450, width = 600;
+      image.init(height, width);
 
+      pn.init();
     }
 
     /// this is called to draw the world

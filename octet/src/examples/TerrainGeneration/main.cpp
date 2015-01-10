@@ -1,10 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-// (C) Andy Thomason 2012-2014
+// (C) Ryan Singh and Himanshu Chablani
 //
 // Modular Framework for OpenGLES2 rendering on multiple platforms.
-//
-// Text overlay
 //
 
 #define OCTET_BULLET 1
