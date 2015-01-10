@@ -11,7 +11,9 @@
 
 #include "../../octet.h"
 
-#include "TerrainGeneration.h"
+#include "terrain_gen.h"
+#include "perlin.h"
+#include "ppm.h"
 
 /// Create a box with octet
 int main(int argc, char **argv) {
@@ -19,7 +21,7 @@ int main(int argc, char **argv) {
   octet::app::init_all(argc, argv);
 
   // our application.
-  octet::TerrainGeneration app(argc, argv);
+  octet::terrain_gen app(argc, argv);
   app.init();
 
   // open windows

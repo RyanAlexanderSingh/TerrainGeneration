@@ -427,6 +427,15 @@
     <ClInclude Include="..\..\containers\string.h">
       <Filter>containers</Filter>
     </ClInclude>
+    <ClInclude Include="perlin.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="terrain_gen.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ppm.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\resources\mesh_builder.inl">
