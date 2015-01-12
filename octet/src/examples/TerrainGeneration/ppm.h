@@ -36,7 +36,10 @@ namespace octet {
     }
 
     void read(std::string fname){
-      
+      std::ifstream pnoise(fname);
+      if (pnoise.is_open()){
+
+      }
     }
 
     //creates a file with a given name and writes to that text file with the generated perlin noise

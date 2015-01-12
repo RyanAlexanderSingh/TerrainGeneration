@@ -4,6 +4,9 @@
 //
 // Modular Framework for OpenGLES2 rendering on multiple platforms.
 //
+
+#include <fstream>
+
 namespace octet {
   /// Scene containing a box with octet.
   class terrain_gen : public app {
@@ -23,35 +26,15 @@ namespace octet {
       app_scene = new visual_scene();
       app_scene->create_default_camera_and_lights();
 
-      int height = 450, width = 600;
-      image.init(height, width);
-
-      //create the perlin noise object
-      pn.init();
-
-      unsigned int kk = 0;
-      // Visit every pixel of the image and assign a color generated with Perlin noise
-      for (unsigned int i = 0; i < height; ++i) {     // y
-        for (unsigned int j = 0; j < width; ++j) {  // x
-          double x = (double)j / ((double)width);
-          double y = (double)i / ((double)height);
-
-          // Typical Perlin noise
-          double n = pn.noise(10 * x, 10 * y, 0.8);
-
-          // Wood like structure
-          n = 20 * pn.noise(x, y, 0.8);
-          n = n - floor(n);
-
-          // Map the values to the [0, 255] interval, for simplicity we use 
-          // tones of grey
-          image.r[kk] = floor(255 * n);
-          image.g[kk] = floor(255 * n);
-          image.b[kk] = floor(255 * n);
-          kk++;
-        }
+      std::string file = "perlin_noise.ppm";
+      std::ifstream pnoise(file);
+      if (pnoise.is_open()){
+        printf("perlin noise file found, loading it...");
+        image.read(file);
       }
-      image.write("perlin_noise.ppm");
+      else{
+        generate_noise();
+      }
     }
 
 
@@ -71,5 +54,38 @@ namespace octet {
       exit(0);
     }
   }
+
+  void generate_noise(){
+    int height = 450, width = 600;
+    image.init(height, width);
+
+    //create the perlin noise object
+    pn.init();
+
+    unsigned int kk = 0;
+    // Visit every pixel of the image and assign a color generated with Perlin noise
+    for (int i = 0; i < height; ++i) {     // y
+      for (int j = 0; j < width; ++j) {  // x
+        float x = (float)j / ((float)width);
+        float y = (float)i / ((float)height);
+
+        // Typical Perlin noise
+        float n = pn.noise(10 * x, 10 * y, 0.8f);
+
+        // Wood like structure
+        /*n = 20 * pn.noise(x, y, 0.8f);
+        n = n - floorf(n);*/
+
+        // Map the values to the [0, 255] interval, for simplicity we use 
+        // tones of grey
+        image.r[kk] = (uint8_t)floorf(255 * n);
+        image.g[kk] = (uint8_t)floorf(255 * n);
+        image.b[kk] = (uint8_t)floorf(255 * n);
+        kk++;
+      }
+    }
+    image.write("perlin_noise.ppm");
+  }
+
 };
 }
