@@ -35,12 +35,12 @@ namespace octet {
       g.resize(size);
     }
 
-    void read(std::string &fname){
+    void read(std::string fname){
       
     }
 
     //creates a file with a given name and writes to that text file with the generated perlin noise
-    void write(std::string &fname){
+    void write(std::string fname){
       std::ofstream input(fname.c_str(), std::ios::out | std::ios::binary);
       if (input.is_open()){
 
