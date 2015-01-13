@@ -25,64 +25,52 @@ namespace octet {
     void app_init() {
       app_scene = new visual_scene();
       app_scene->create_default_camera_and_lights();
-
-      std::string file = "perlin_noise.ppm";
-      std::ifstream pnoise(file);
-      if (pnoise.is_open()){
-        printf("perlin noise file found, loading it...");
-        image.read(file);
-      }
-      else{
-        generate_noise();
-      }
+      generate_noise();
     }
 
 
-  /// this is called to draw the world
-  void draw_world(int x, int y, int w, int h) {
-    int vx = 0, vy = 0;
-    get_viewport_size(vx, vy);
-    app_scene->begin_render(vx, vy);
+    /// this is called to draw the world
+    void draw_world(int x, int y, int w, int h) {
+      int vx = 0, vy = 0;
+      get_viewport_size(vx, vy);
+      app_scene->begin_render(vx, vy);
 
-    // update matrices. assume 30 fps.
-    app_scene->update(1.0f / 30);
+      // update matrices. assume 30 fps.
+      app_scene->update(1.0f / 30);
 
-    // draw the scene
-    app_scene->render((float)vx / vy);
+      // draw the scene
+      app_scene->render((float)vx / vy);
 
-    if (is_key_down(key_esc)){
-      exit(0);
-    }
-  }
-
-  void generate_noise(){
-    int height = 450, width = 600;
-    image.init(height, width);
-
-    unsigned int kk = 0;
-    // Visit every pixel of the image and assign a color generated with Perlin noise
-    for (int i = 0; i < height; ++i) {     // y
-      for (int j = 0; j < width; ++j) {  // x
-        float x = (float)j / ((float)width);
-        float y = (float)i / ((float)height);
-
-        // Typical Perlin noise
-        float n = pn.noise(10 * x, 10 * y, 0.8f);
-
-        // Wood like structure
-        /*n = 20 * pn.noise(x, y, 0.8f);
-        n = n - floorf(n);*/
-
-        // Map the values to the [0, 255] interval, for simplicity we use 
-        // tones of grey
-        image.r[kk] = (uint8_t)floorf(255 * n);
-        image.g[kk] = (uint8_t)floorf(255 * n);
-        image.b[kk] = (uint8_t)floorf(255 * n);
-        kk++;
+      if (is_key_down(key_esc)){
+        exit(0);
       }
     }
-    image.write("perlin_noise.ppm");
-  }
 
-};
+    void generate_noise(){
+      int height = 450, width = 600;
+      image.init(height, width);
+
+      unsigned int kk = 0;
+      // Visit every pixel of the image and assign a color generated with Perlin noise
+      for (int i = 0; i < height; ++i) {     // y
+        for (int j = 0; j < width; ++j) {  // x
+          float x = (float)j / ((float)width);
+          float y = (float)i / ((float)height);
+
+          // Typical Perlin noise
+          float n = pn.generate_noise(10.0f * x, 10.0f * y, 0.8f, 10);
+
+          // Wood like structure
+          /*n = 20 * pn.generate_noise(x, y, 0.8f, 10);
+          n = n - floorf(n);*/
+
+          // Map the values to the [0, 255] interval, for simplicity we use tones of grey
+          image.pixel_colour[kk] = (uint8_t)floorf(255 * n);
+          kk++;
+        }
+      }
+      image.write("perlin_noise.ppm");
+    }
+
+  };
 }

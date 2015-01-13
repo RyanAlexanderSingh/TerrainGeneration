@@ -18,8 +18,8 @@ namespace octet {
     }
 
     int width = 0, height = 0, size = 0, max_col_val = 255;
-    std::vector<unsigned char> r, g, b;
-    
+    std::vector<unsigned char> pixel_colour;
+
     //check if we need
     unsigned int nr_lines, nr_columns;
 
@@ -30,19 +30,7 @@ namespace octet {
       nr_columns = width;
       size = width*height;
 
-      r.resize(size);
-      b.resize(size);
-      g.resize(size);
-    }
-
-    //work on this later
-    void read(std::string fname){
-      std::ifstream input(fname);
-      if (input.is_open()){
-        std::string line;
-        std::getline(input, line);
-
-      }
+      pixel_colour.resize(size);
     }
 
     //creates a file with a given name and writes to that text file with the generated perlin noise
@@ -58,12 +46,11 @@ namespace octet {
 
         char aux;
         for (int i = 0; i < size; ++i){
-          aux = (char)r[i];
-          input.write(&aux, 1);
-          aux = (char)g[i];
-          input.write(&aux, 1);
-          aux = (char)b[i];
-          input.write(&aux, 1);
+          //run for loop three times for the R, G, B of each pixel
+          for (int j = 0; j < 3; ++j){
+            aux = (char)pixel_colour[i];
+            input.write(&aux, 1);
+          }
         }
       }
       else {

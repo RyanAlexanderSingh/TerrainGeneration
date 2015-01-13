@@ -2,7 +2,7 @@
 //
 // (C) Ryan Singh and Himanshu Chablani
 //
-// Modular Framework for OpenGLES2 rendering on multiple platforms.
+// Parts of this class are a direct translation to C++11 from Ken Perlin's improved perlin function (http://mrl.nyu.edu/~perlin/noise/)
 //
 
 namespace octet {
@@ -31,6 +31,7 @@ namespace octet {
       return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
     }
 
+    //function responsible for generating the perlin noise
     float noise(float x, float y, float z) {
 
       //purmutation table - same as Ken Perlins pseudo-random table
@@ -47,6 +48,7 @@ namespace octet {
         228, 251, 34, 242, 193, 238, 210, 144, 12, 191, 179, 162, 241, 81, 51, 145, 235, 249, 14, 239,
         107, 49, 192, 214, 31, 181, 199, 106, 157, 184, 84, 204, 176, 115, 121, 50, 45, 127, 4, 150, 254,
         138, 236, 205, 93, 222, 114, 67, 29, 24, 72, 243, 141, 128, 195, 78, 66, 215, 61, 156, 180 };
+
 
       // Find the unit cube that contains the point
       int X = (int)floor(x) & 255;
@@ -76,11 +78,26 @@ namespace octet {
       return (res + 1.0f) / 2.0f;
     }
 
+    //generates the wholer perlin noise given a certain number of octaves
+    float generate_noise(float x, float y, float z, int _octaves){
+      float result = 0.0f;
+      float amp = 1.0f;
 
-  /*float noise(int x, int y){
-    int n = x + y * 57;
-    n = (n << 13) ^ n;
-    return (1.0 - ((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);
-    }*/
-};
+      int i = _octaves;
+      while (i--){
+        result += noise(x, y, z) * amp;
+        x *= 2.0f;
+        y *= 2.0f;
+        z *= 2.0f;
+        amp *= 0.5f;
+      }
+      return result;
+    }
+
+    /*float noise(int x, int y){
+      int n = x + y * 57;
+      n = (n << 13) ^ n;
+      return (1.0 - ((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);
+      }*/
+  };
 }
