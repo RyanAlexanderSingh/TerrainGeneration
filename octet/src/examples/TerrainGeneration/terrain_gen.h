@@ -21,16 +21,21 @@ namespace octet {
     terrain_gen(int argc, char **argv) : app(argc, argv) {
     }
 
+
+
     /// this is called once OpenGL is initialized
     void app_init() {
       app_scene = new visual_scene();
       app_scene->create_default_camera_and_lights();
-
       app_scene->get_camera_instance(0)->set_far_plane(10000);
-      app_scene->get_camera_instance(0)->get_node()->access_nodeToParent().translate(150, 150, 150);
-      app_scene->get_camera_instance(0)->get_node()->access_nodeToParent().rotateY(-90);
-      app_scene->get_camera_instance(0)->get_node()->access_nodeToParent().rotateX(0);
 
+      mat4t &camera_mat = app_scene->get_camera_instance(0)->get_node()->access_nodeToParent();
+
+      camera_mat.translate(150, 150, 150);
+      camera_mat.rotateY(-90);
+      camera_mat.rotateX(0);
+
+      //start to generate the perlin noise for the terrain generation
       generate_noise();
     }
 
@@ -46,60 +51,23 @@ namespace octet {
       // draw the scene
       app_scene->render((float)vx / vy);
 
-      if (is_key_down(key_esc)){
-        exit(0);
-      }
-      if (is_key_down(key::key_shift))
-      {
-        app_scene->get_camera_instance(0)->get_node()->access_nodeToParent().translate(0, 5, 0);
-      }
-      if (is_key_down(key::key_ctrl))
-      {
-        app_scene->get_camera_instance(0)->get_node()->access_nodeToParent().translate(0, -5, 0);
-      }
+      key_presses();
 
-      if (is_key_down(key::key_up))
-      {
-        app_scene->get_camera_instance(0)->get_node()->access_nodeToParent().translate(0, 0, -5);
-      }
-      if (is_key_down(key::key_down))
-      {
-        app_scene->get_camera_instance(0)->get_node()->access_nodeToParent().translate(0, 0, 5);
-      }
-      if (is_key_down(key::key_left))
-      {
-        app_scene->get_camera_instance(0)->get_node()->access_nodeToParent().translate(-5, 0, 0);
-      }
-      if (is_key_down(key::key_right))
-      {
-        app_scene->get_camera_instance(0)->get_node()->access_nodeToParent().translate(5, 0, 0);
-      }
-
-      int xm, ym;
-      get_viewport_size(vx, vy);
-      get_mouse_pos(xm, ym);
-
-      mat4t modelToWorld;
-      modelToWorld.loadIdentity();
-      modelToWorld[3] = vec4(app_scene->get_camera_instance(0)->get_node()->access_nodeToParent().w().x(), app_scene->get_camera_instance(0)->get_node()->access_nodeToParent().w().y(), app_scene->get_camera_instance(0)->get_node()->access_nodeToParent().w().z(), 1);
-      modelToWorld.rotateY((float)-xm*2.0f);
-      if (vy / 2 - ym < 70 && vy / 2 - ym > -70)
-        modelToWorld.rotateX(vy / 2 - ym);
-      if (vy / 2 - ym >= 70)
-        modelToWorld.rotateX(70);
-      if (vy / 2 - ym <= -70)
-        modelToWorld.rotateX(-70);
-      app_scene->get_camera_instance(0)->get_node()->access_nodeToParent() = modelToWorld;//apply to the node
-
+      int mx, my;
+      get_mouse_pos(mx, my);
+      mouse_control(mx, my, vy);
     }
+
     struct my_vertex {
       vec3p pos;
       vec3p nor;
       uint32_t color;
     };
+
     static uint32_t make_color(float r, float g, float b) {
       return 0xff000000 + ((int)(r*255.0f) << 0) + ((int)(g*255.0f) << 8) + ((int)(b*255.0f) << 16);
     }
+
     vec3 matrixmult(mat4t objm, vec3 direction)
     {
       vec3 temp(objm.x().x()*direction.x() + objm.y().x()*direction.y() + objm.z().x()*direction.z(),
@@ -107,7 +75,6 @@ namespace octet {
         objm.x().z()*direction.x() + objm.y().z()*direction.y() + objm.z().z()*direction.z());
       return temp;
     }
-
 
     void generate_noise(){
       int height = 450, width = 600;
@@ -152,7 +119,7 @@ namespace octet {
           image.pixel_colour[kk] = (uint8_t)floorf(255 * n);
 
           float colour_val = floorf(255 * n) / 255.0f;
-          float vh = colour_val*30;
+          float vh = colour_val * 30;
           vtx->pos = vec3p(j, vh, i);
           vtx->nor = vec3p(j, vh, i);
           vtx->color = make_color(1, 0, 0);
@@ -164,11 +131,7 @@ namespace octet {
       tempvert = 0;
       for (int i = 0; i < height - 1; ++i) {
         for (int j = 0; j < width - 1; ++j) {
-          //0---------(1).....(width-1)
-          //|     \    |
-          //(width)-(width+1)......(2*width-1)
-          //|      \   |
-          //(2*width)-(2*width+1)...(3*width-1)
+
           idx[0] = tempvert;
           idx[1] = tempvert + 1;
           idx[2] = tempvert + width + 1;
@@ -191,5 +154,55 @@ namespace octet {
       image.write("perlin_noise.ppm");
     }
 
+    void key_presses(){
+
+      mat4t &camera_mat = app_scene->get_camera_instance(0)->get_node()->access_nodeToParent();
+
+      if (is_key_down(key_esc)){
+        exit(0);
+      }
+      if (is_key_down(key::key_shift))
+      {
+        camera_mat.translate(0, 5, 0);
+      }
+      if (is_key_down(key::key_ctrl))
+      {
+        camera_mat.translate(0, -5, 0);
+      }
+      if (is_key_down(key::key_up))
+      {
+        camera_mat.translate(0, 0, -5);
+      }
+      if (is_key_down(key::key_down))
+      {
+        camera_mat.translate(0, 0, 5);
+      }
+      if (is_key_down(key::key_left))
+      {
+        camera_mat.translate(-5, 0, 0);
+      }
+      if (is_key_down(key::key_right))
+      {
+        camera_mat.translate(5, 0, 0);
+      }
+    }
+
+    void mouse_control(int mouse_x, int mouse_y, int viewpoint_y){
+
+      mat4t &camera_mat = app_scene->get_camera_instance(0)->get_node()->access_nodeToParent();
+
+      mat4t modelToWorld;
+
+      modelToWorld.loadIdentity();
+      modelToWorld[3] = vec4(camera_mat.w().x(), camera_mat.w().y(), camera_mat.w().z(), 1);
+      modelToWorld.rotateY((float)-mouse_x*2.0f);
+      if (viewpoint_y / 2 - mouse_y < 70 && viewpoint_y / 2 - mouse_y > -70)
+        modelToWorld.rotateX(viewpoint_y / 2 - mouse_y);
+      if (viewpoint_y / 2 - mouse_y >= 70)
+        modelToWorld.rotateX(70);
+      if (viewpoint_y / 2 - mouse_y <= -70)
+        modelToWorld.rotateX(-70);
+      camera_mat = modelToWorld;//apply to the node
+    }
   };
 }
