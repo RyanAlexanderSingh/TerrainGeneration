@@ -35,9 +35,12 @@ namespace octet {
       g.resize(size);
     }
 
+    //work on this later
     void read(std::string fname){
-      std::ifstream pnoise(fname);
-      if (pnoise.is_open()){
+      std::ifstream input(fname);
+      if (input.is_open()){
+        std::string line;
+        std::getline(input, line);
 
       }
     }

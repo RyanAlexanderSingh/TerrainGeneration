@@ -59,9 +59,6 @@ namespace octet {
     int height = 450, width = 600;
     image.init(height, width);
 
-    //create the perlin noise object
-    pn.init();
-
     unsigned int kk = 0;
     // Visit every pixel of the image and assign a color generated with Perlin noise
     for (int i = 0; i < height; ++i) {     // y
