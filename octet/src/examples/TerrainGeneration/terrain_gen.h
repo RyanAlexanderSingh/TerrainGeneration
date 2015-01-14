@@ -21,8 +21,6 @@ namespace octet {
     terrain_gen(int argc, char **argv) : app(argc, argv) {
     }
 
-
-
     /// this is called once OpenGL is initialized
     void app_init() {
       app_scene = new visual_scene();
@@ -82,7 +80,7 @@ namespace octet {
 
       //the mesh generatiion
       param_shader *shader = new param_shader("shaders/default.vs", "shaders/simple_color.fs");
-      material *red = new material(vec4(1, 0, 0, 1), shader);
+      material *red = new material(vec4(0.6f, 0.298f, 0.0f, 1.0f), shader);
 
       mesh *terrain = new mesh();
       // allocate vertices and indices into OpenGL buffers
@@ -91,44 +89,45 @@ namespace octet {
       terrain->allocate(sizeof(my_vertex) * num_vertices, sizeof(uint32_t) * num_indices);
       terrain->set_params(sizeof(my_vertex), num_indices, num_vertices, GL_TRIANGLES, GL_UNSIGNED_INT);
       // describe the structure of my_vertex to OpenGL
+
       terrain->add_attribute(attribute_pos, 3, GL_FLOAT, 0);
-      terrain->add_attribute(attribute_color, 4, GL_UNSIGNED_BYTE, 12, GL_TRUE);
+      terrain->add_attribute(attribute_normal, 3, GL_FLOAT, 12);
+      terrain->add_attribute(attribute_color, 4, GL_UNSIGNED_BYTE, 24, GL_TRUE);
+
       gl_resource::wolock vl(terrain->get_vertices());
       my_vertex *vtx = (my_vertex *)vl.u8();
       gl_resource::wolock il(terrain->get_indices());
       uint32_t *idx = idx = il.u32();
       //end of init
 
-      int tempvert = 0;
-
       unsigned int kk = 0;
       // Visit every pixel of the image and assign a color generated with Perlin noise
       for (int i = 0; i < height; ++i) {     // y
         for (int j = 0; j < width; ++j) {  // x
-          float x = (float)j / ((float)width);
-          float y = (float)i / ((float)height);
+          float x = 1.0f * j / width;
+          float y = 1.0f * i / height;
 
           // Typical Perlin noise
-          float n = pn.generate_noise(10.0f * x, 10.0f * y, 0.8f, 10);
-
-          // Wood like structure
-          /*n = 20 * pn.generate_noise(x, y, 0.8f, 10);
-          n = n - floorf(n);*/
+          float n = pn.generate_noise(10.0f * x, 10.0f * y, 0.8f, 7, true);
 
           // Map the values to the [0, 255] interval, for simplicity we use tones of grey
-          image.pixel_colour[kk] = (uint8_t)floorf(255 * n);
+          //image.pixel_colour[kk] = (uint8_t)floorf(255 * n);
+
+          image.pixel_colour[kk] = floorf(255 * n);
 
           float colour_val = floorf(255 * n) / 255.0f;
           float vh = colour_val * 30;
-          vtx->pos = vec3p(j, vh, i);
-          vtx->nor = vec3p(j, vh, i);
-          vtx->color = make_color(1, 0, 0);
+          vtx->pos = vec3p((float)j, vh, (float)i);
+          vtx->nor = vec3p((float)j, vh, (float)i);
+          vtx->color = make_color(1.0f - colour_val, 1.0f - colour_val, 1.0f - colour_val);
+
           vtx++;
 
           kk++;
         }
       }
-      tempvert = 0;
+
+      int tempvert = 0;
       for (int i = 0; i < height - 1; ++i) {
         for (int j = 0; j < width - 1; ++j) {
 
@@ -169,19 +168,19 @@ namespace octet {
       {
         camera_mat.translate(0, -5, 0);
       }
-      if (is_key_down(key::key_up))
+      if (is_key_down(key::key_up) || is_key_down('W'))
       {
         camera_mat.translate(0, 0, -5);
       }
-      if (is_key_down(key::key_down))
+      if (is_key_down(key::key_down) || is_key_down('S'))
       {
         camera_mat.translate(0, 0, 5);
       }
-      if (is_key_down(key::key_left))
+      if (is_key_down(key::key_left) || is_key_down('A'))
       {
         camera_mat.translate(-5, 0, 0);
       }
-      if (is_key_down(key::key_right))
+      if (is_key_down(key::key_right) || is_key_down('D'))
       {
         camera_mat.translate(5, 0, 0);
       }
