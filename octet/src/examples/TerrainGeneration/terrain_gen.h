@@ -5,13 +5,11 @@
 // Modular Framework for OpenGLES2 rendering on multiple platforms.
 //
 
-#include <fstream>
-
 namespace octet {
   /// Scene containing a box with octet.
   class terrain_gen : public app {
 
-    ppm image;
+    ppm ppm_image;
     perlin pn;
 
     // scene for drawing box
@@ -28,13 +26,16 @@ namespace octet {
       app_scene->get_camera_instance(0)->set_far_plane(10000);
 
       mat4t &camera_mat = app_scene->get_camera_instance(0)->get_node()->access_nodeToParent();
-
       camera_mat.translate(150, 150, 150);
       camera_mat.rotateY(-90);
       camera_mat.rotateX(0);
 
       //start to generate the perlin noise for the terrain generation
       generate_noise();
+
+      //create the shape for the skydome and texture it
+      //TODO: update the skybox properly
+      // create_skybox();
     }
 
     /// this is called to draw the world
@@ -75,8 +76,8 @@ namespace octet {
     }
 
     void generate_noise(){
-      int height = 450, width = 600;
-      image.init(height, width);
+      int height = 450, width = 650;
+      ppm_image.init(height, width);
 
       //the mesh generatiion
       param_shader *shader = new param_shader("shaders/default.vs", "shaders/simple_color.fs");
@@ -108,18 +109,35 @@ namespace octet {
           float y = 1.0f * i / height;
 
           // Typical Perlin noise
-          float n = pn.generate_noise(10.0f * x, 10.0f * y, 0.8f, 7, true);
+          float n = pn.generate_noise(10.0f * x, 10.0f * y, 0.8f, 15, false);
+
+         //cap the perlin noise to prevent it from going positive numbers
+          if (n >= 1.0f)
+          {
+            n = 1.0f;
+          }
 
           // Map the values to the [0, 255] interval, for simplicity we use tones of grey
-          //image.pixel_colour[kk] = (uint8_t)floorf(255 * n);
+          float normalize_colour = floorf(255.0f * n);
 
-          image.pixel_colour[kk] = floorf(255 * n);
+          ppm_image.pixel_colour[kk] = (uint8_t)normalize_colour;
+          float vh = normalize_colour / 255.0f * 30;
+          float actual_vert_height = 30.0f - vh;
 
-          float colour_val = floorf(255 * n) / 255.0f;
-          float vh = colour_val * 30;
-          vtx->pos = vec3p((float)j, vh, (float)i);
-          vtx->nor = vec3p((float)j, vh, (float)i);
-          vtx->color = make_color(1.0f - colour_val, 1.0f - colour_val, 1.0f - colour_val);
+          vtx->pos = vec3p((float)j, actual_vert_height, (float)i);
+          vtx->nor = vec3p((float)j, actual_vert_height, (float)i);
+
+
+          if (actual_vert_height > 6.0f)
+            vtx->color = make_color(1.0f, 1.0f, 1.0f); //this colour is white
+          else
+            if (actual_vert_height > 3.0f)
+              vtx->color = make_color(0.274f, 0.159f, 0.011f); //this colour is dark red/brown
+            else
+              if (actual_vert_height > 2.0f)
+                vtx->color = make_color(0.4f, 0.2f, 0.0f); //this colour is a lighter brown
+              else
+                vtx->color = make_color(0.172f, 0.54f, 0.215f); //this colour is green
 
           vtx++;
 
@@ -150,7 +168,16 @@ namespace octet {
       app_scene->add_child(node);
       app_scene->add_mesh_instance(new mesh_instance(node, terrain, red));
 
-      image.write("perlin_noise.ppm");
+      ppm_image.write("perlin_noise.ppm");
+    }
+
+    void create_skybox(){
+      //create the fake skybox
+      material *skybox_mat = new material(new image("assets/seamless_sky.jpg"));
+      mesh_sphere *skydome = new mesh_sphere(100.0f, 400.0f, 3);
+      scene_node *node = new scene_node();
+      app_scene->add_child(node);
+      app_scene->add_mesh_instance(new mesh_instance(node, skydome, skybox_mat));
     }
 
     void key_presses(){
@@ -160,6 +187,8 @@ namespace octet {
       if (is_key_down(key_esc)){
         exit(0);
       }
+
+      //camera movement keys
       if (is_key_down(key::key_shift))
       {
         camera_mat.translate(0, 5, 0);
@@ -196,7 +225,7 @@ namespace octet {
       modelToWorld[3] = vec4(camera_mat.w().x(), camera_mat.w().y(), camera_mat.w().z(), 1);
       modelToWorld.rotateY((float)-mouse_x*2.0f);
       if (viewpoint_y / 2 - mouse_y < 70 && viewpoint_y / 2 - mouse_y > -70)
-        modelToWorld.rotateX(viewpoint_y / 2 - mouse_y);
+        modelToWorld.rotateX((float)viewpoint_y / 2 - mouse_y);
       if (viewpoint_y / 2 - mouse_y >= 70)
         modelToWorld.rotateX(70);
       if (viewpoint_y / 2 - mouse_y <= -70)
