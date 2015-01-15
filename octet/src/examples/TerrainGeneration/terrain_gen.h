@@ -112,7 +112,7 @@ namespace octet {
           float y = 1.0f * i / height;
 
           // Typical Perlin noise
-          float n = pn.generate_noise(10.0f * x, 10.0f * y, 30.0f, 8, true);
+          float n = pn.generate_noise(10.0f * x, 10.0f * y, 0.8f, 8, true);
 
          //normalise the perlin noise that has been generated to prevent minus numbers
           if (n >= 1.0f)
@@ -141,7 +141,7 @@ namespace octet {
               if (actual_vert_height > 2.0f)
                 vtx->color = make_color(0.4f, 0.2f, 0.0f); //this colour is a lighter brown
               else
-                vtx->color = make_color(0.172f, 0.69f, 0.215f); //this colour is green
+                vtx->color = make_color(0.172f, 0.54f, 0.215f); //this colour is green
 
           vtx++;
 
@@ -191,6 +191,8 @@ namespace octet {
       if (is_key_down(key_esc)){
         exit(0);
       }
+
+      //camera movement keys
       if (is_key_down(key::key_shift))
       {
         camera_mat.translate(0, 5, 0);
