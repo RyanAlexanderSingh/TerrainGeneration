@@ -4,8 +4,8 @@
 //
 // Parts of this class are a direct translation to C++11 from Ken Perlin's improved perlin function (http://mrl.nyu.edu/~perlin/noise/)
 //
-#include <numeric>
 #include <random>
+#include <numeric>
 namespace octet {
   /// Scene containing a box with octet.
   class perlin : public resource {
@@ -66,16 +66,23 @@ namespace octet {
     }
 
     //generates the wholer perlin noise given a certain number of octaves
-    float generate_noise(float x, float y, float z, int _octaves, bool seed){
+    float generate_noise(float x, float y, float z, int _octaves, bool random_table){
       float result = 0.0f;
       float amp = 1.0f;
 
-      if (seed){
-        random rand;
+      if (random_table){
+        typedef std::default_random_engine random_seed;
+        uint8_t seed_val = 42; //TODO: randomize this seed val;
+        random_seed rng;
+        rng.seed(seed_val);
+
+        std::uniform_int_distribution<> dist255(0, 255);
+
         for (int i = 0; i < 256; ++i){
-          permutation[i] = { (uint8_t)rand.get(0.0f, 255.0f) };
+          permutation[i] = { (uint8_t)dist255(rng) };
         }
       }
+
       int i = _octaves;
       while (i--){
         result += noise(x, y, z) * amp;

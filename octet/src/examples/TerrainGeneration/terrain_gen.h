@@ -31,7 +31,7 @@ namespace octet {
       camera_mat.rotateX(0);
 
       //start to generate the perlin noise for the terrain generation
-      generate_noise();
+      generate(true);
 
       //create the shape for the skydome and texture it
       //TODO: update the skybox properly
@@ -75,9 +75,18 @@ namespace octet {
       return temp;
     }
 
-    void generate_noise(){
-      int height = 450, width = 650;
-      ppm_image.init(height, width);
+    void generate(bool from_image){
+
+      int height = 0, width = 0;
+
+      if (from_image){
+        ppm_image.read("p1.ppm");
+        height = ppm_image.height, width = ppm_image.width;
+      }
+      else{
+        height = 450, width = 650;
+        ppm_image.init(height, width);
+      }
 
       //the mesh generatiion
       param_shader *shader = new param_shader("shaders/default.vs", "shaders/simple_color.fs");
@@ -87,7 +96,7 @@ namespace octet {
       // allocate vertices and indices into OpenGL buffers
       size_t num_vertices = height*width;
       size_t num_indices = 6 * (num_vertices - width) - 6 * height;
-      terrain->allocate(sizeof(my_vertex) * num_vertices, sizeof(uint32_t) * num_indices);
+      terrain->allocate(sizeof(my_vertex)* num_vertices, sizeof(uint32_t)* num_indices);
       terrain->set_params(sizeof(my_vertex), num_indices, num_vertices, GL_TRIANGLES, GL_UNSIGNED_INT);
       // describe the structure of my_vertex to OpenGL
 
@@ -102,42 +111,55 @@ namespace octet {
       //end of init
 
       unsigned int kk = 0;
+
       // Visit every pixel of the image and assign a color generated with Perlin noise
       for (int i = 0; i < height; ++i) {     // y
         for (int j = 0; j < width; ++j) {  // x
           float x = 1.0f * j / width;
           float y = 1.0f * i / height;
 
-          // Typical Perlin noise
-          float n = pn.generate_noise(10.0f * x, 10.0f * y, 0.8f, 15, false);
+          float normalize_colour;
 
-         //cap the perlin noise to prevent it from going positive numbers
-          if (n >= 1.0f)
-          {
-            n = 1.0f;
+          if (from_image){
+            normalize_colour = -ppm_image.pixel_colour[kk];
           }
 
-          // Map the values to the [0, 255] interval, for simplicity we use tones of grey
-          float normalize_colour = floorf(255.0f * n);
+          else {
+            // Typical Perlin noise
+            float n = pn.generate_noise(10.0f * x, 10.0f * y, 0.0f, 3, false);
+            //cap the perlin noise to prevent it from going positive numbers
+            /*if (n >= 1.2f)
+            {
+            n = 1.2f;
+            }*/
 
-          ppm_image.pixel_colour[kk] = (uint8_t)normalize_colour;
-          float vh = normalize_colour / 255.0f * 30;
+            // Map the values to the [0, 255] interval, for simplicity we use tones of grey
+            normalize_colour = floorf(255.0f * n);
+
+            ppm_image.pixel_colour[kk] = (uint8_t)normalize_colour;
+            
+          }
+
+          float vh = normalize_colour / 255.0f * 60;
           float actual_vert_height = 30.0f - vh;
+          //printf("%f\n", actual_vert_height);
 
           vtx->pos = vec3p((float)j, actual_vert_height, (float)i);
           vtx->nor = vec3p((float)j, actual_vert_height, (float)i);
 
-
-          if (actual_vert_height > 6.0f)
-            vtx->color = make_color(1.0f, 1.0f, 1.0f); //this colour is white
-          else
-            if (actual_vert_height > 3.0f)
-              vtx->color = make_color(0.274f, 0.159f, 0.011f); //this colour is dark red/brown
-            else
-              if (actual_vert_height > 2.0f)
-                vtx->color = make_color(0.4f, 0.2f, 0.0f); //this colour is a lighter brown
-              else
-                vtx->color = make_color(0.172f, 0.54f, 0.215f); //this colour is green
+          //if (actual_vert_height < 0.2)
+          //  vtx->color = make_color(0.0f, 0.0f, 1.0f); //blue for the pools of water
+          //else if (actual_vert_height > 6.0f)
+          //  vtx->color = make_color(1.0f, 1.0f, 1.0f); //this colour is white
+          //else
+          //if (actual_vert_height > 3.0f)
+          //  vtx->color = make_color(0.274f, 0.159f, 0.011f); //this colour is dark red/brown
+          //else
+          //if (actual_vert_height > 2.0f)
+          //  vtx->color = make_color(0.4f, 0.2f, 0.0f); //this colour is a lighter brown
+          //else
+          //  vtx->color = make_color(0.172f, 0.54f, 0.215f); //this colour is green
+          vtx->color = make_color(0.0f, normalize_colour, 0.0f);
 
           vtx++;
 
@@ -218,7 +240,6 @@ namespace octet {
     void mouse_control(int mouse_x, int mouse_y, int viewpoint_y){
 
       mat4t &camera_mat = app_scene->get_camera_instance(0)->get_node()->access_nodeToParent();
-
       mat4t modelToWorld;
 
       modelToWorld.loadIdentity();
