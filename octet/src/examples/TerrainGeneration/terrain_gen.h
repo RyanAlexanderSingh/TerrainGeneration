@@ -35,7 +35,7 @@ namespace octet {
 
       //create the shape for the skydome and texture it
       //TODO: update the skybox properly
-      // create_skybox();
+      //create_skybox();
     }
 
     /// this is called to draw the world
@@ -80,7 +80,7 @@ namespace octet {
       int height = 0, width = 0;
 
       if (from_image){
-        ppm_image.read("perlin_noise.ppm");
+        ppm_image.read("heightmap_exp1.ppm");
         height = ppm_image.height, width = ppm_image.width;
       }
       else{
@@ -111,55 +111,36 @@ namespace octet {
       //end of init
 
       unsigned int kk = 0;
-
+      
       // Visit every pixel of the image and assign a color generated with Perlin noise
       for (int i = 0; i < height; ++i) {     // y
         for (int j = 0; j < width; ++j) {  // x
           float x = 1.0f * j / width;
           float y = 1.0f * i / height;
 
-          float normalize_colour;
-
-          if (from_image){
-            normalize_colour = -ppm_image.pixel_colour[kk];
-          }
-
-          else {
+          if(!from_image) {
             // Typical Perlin noise
-            float n = pn.generate_noise(10.0f * x, 10.0f * y, 0.0f, 3, false);
+            float n = pn.generate_noise(10.0f * x, 10.0f * y, 0.8f, 12, false);
             //cap the perlin noise to prevent it from going positive numbers
-            /*if (n >= 1.2f)
-            {
-            n = 1.2f;
-            }*/
 
             // Map the values to the [0, 255] interval, for simplicity we use tones of grey
-            normalize_colour = floorf(255.0f * n);
-
-            ppm_image.pixel_colour[kk] = (uint8_t)normalize_colour;
-            
+            ppm_image.pixel_colour[kk] = floorf(255.0f * n);
+           
           }
-
-          float vh = normalize_colour / 255.0f * 30;
-          float actual_vert_height = 30.0f - vh;
+          float colour_mesh = (float)ppm_image.pixel_colour[kk] / 255.0f;
+                   
+          float vertex_height =  colour_mesh * 30.0f;
           //printf("%f\n", actual_vert_height);
-
-          vtx->pos = vec3p((float)j, actual_vert_height, (float)i);
-          vtx->nor = vec3p((float)j, actual_vert_height, (float)i);
-
-          //if (actual_vert_height < 0.2)
-          //  vtx->color = make_color(0.0f, 0.0f, 1.0f); //blue for the pools of water
-          //else if (actual_vert_height > 6.0f)
-          //  vtx->color = make_color(1.0f, 1.0f, 1.0f); //this colour is white
-          //else
-          //if (actual_vert_height > 3.0f)
-          //  vtx->color = make_color(0.274f, 0.159f, 0.011f); //this colour is dark red/brown
-          //else
-          //if (actual_vert_height > 2.0f)
-          //  vtx->color = make_color(0.4f, 0.2f, 0.0f); //this colour is a lighter brown
-          //else
-          //  vtx->color = make_color(0.172f, 0.54f, 0.215f); //this colour is green
-          vtx->color = make_color(0.0f, normalize_colour, 0.0f);
+          vtx->pos = vec3p((float)j, vertex_height, (float)i);
+          vtx->nor = vec3p((float)j, vertex_height, (float)i);
+         
+          if (colour_mesh <= 0.1f)
+            vtx->color = make_color(0.0f, 0.0f, 1.0f); 
+          else
+          if (colour_mesh <= 0.15f&&colour_mesh >= 0.1f)
+            vtx->color = make_color(0.0f, 0.65f, 0.0f);
+          else
+          vtx->color = make_color(colour_mesh, colour_mesh, colour_mesh);
 
           vtx++;
 

@@ -39,7 +39,7 @@ namespace octet {
 
     //read a .ppm file heightmap
     void read(std::string fname){
-      
+
       std::ifstream input(fname.c_str(), std::ios::in | std::ios::binary);
       if (input.is_open()){
         std::string line;
@@ -83,8 +83,12 @@ namespace octet {
 
         char aux;
         for (int i = 0; i < size; ++i) {
-          input.read(&aux, 1);
-          pixel_colour[i] = (unsigned char)aux;
+          for (int j = 0; j < 3; ++j){
+            input.read(&aux, 1);
+            if (j == 2){           
+              pixel_colour[i] = (unsigned char)aux;
+            }
+          }
         }
       }
       else {
@@ -109,8 +113,8 @@ namespace octet {
         for (int i = 0; i < size; ++i){
           //run for loop three times for the R, G, B of each pixel
           for (int j = 0; j < 3; ++j){
-            aux = (char)pixel_colour[i];
-            input.write(&aux, 1);
+          aux = (char)pixel_colour[i];
+          input.write(&aux, 1);
           }
         }
       }
