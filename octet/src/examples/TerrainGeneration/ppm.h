@@ -39,6 +39,7 @@ namespace octet {
 
     //read a .ppm file heightmap
     void read(std::string fname){
+      
       std::ifstream input(fname.c_str(), std::ios::in | std::ios::binary);
       if (input.is_open()){
         std::string line;

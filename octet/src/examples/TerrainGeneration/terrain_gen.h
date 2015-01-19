@@ -80,7 +80,7 @@ namespace octet {
       int height = 0, width = 0;
 
       if (from_image){
-        ppm_image.read("p1.ppm");
+        ppm_image.read("perlin_noise.ppm");
         height = ppm_image.height, width = ppm_image.width;
       }
       else{
@@ -140,7 +140,7 @@ namespace octet {
             
           }
 
-          float vh = normalize_colour / 255.0f * 60;
+          float vh = normalize_colour / 255.0f * 30;
           float actual_vert_height = 30.0f - vh;
           //printf("%f\n", actual_vert_height);
 
@@ -190,6 +190,7 @@ namespace octet {
       app_scene->add_child(node);
       app_scene->add_mesh_instance(new mesh_instance(node, terrain, red));
 
+      if (!from_image)
       ppm_image.write("perlin_noise.ppm");
     }
 
