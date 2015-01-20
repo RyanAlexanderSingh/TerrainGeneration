@@ -48,8 +48,6 @@ namespace octet {
     //misc. key presses such as camera movement and closing the program
     void key_presses(mat4t &camera){
 
-
-
       if (the_app->is_key_down(key_esc)){
         exit(0);
       }
@@ -82,17 +80,17 @@ namespace octet {
     }
 
     //mouse control using x and y pos of mouse
-    void mouse_control(){
+    void mouse_control(mat4t &camera){
 
       int x, y;
       the_app->get_mouse_pos(x, y);
       int vx, vy;
       the_app->get_viewport_size(vx, vy);
-      mat4t &camera_mat = app_scene->get_camera_instance(0)->get_node()->access_nodeToParent();
+      
       mat4t modelToWorld;
 
       modelToWorld.loadIdentity();
-      modelToWorld[3] = vec4(camera_mat.w().x(), camera_mat.w().y(), camera_mat.w().z(), 1);
+      modelToWorld[3] = vec4(camera.w().x(), camera.w().y(), camera.w().z(), 1);
       modelToWorld.rotateY((float)-x*2.0f);
       if (vy / 2 - y < 70 && vy / 2 - y > -70)
         modelToWorld.rotateX((float)vy / 2 - y);
@@ -100,7 +98,7 @@ namespace octet {
         modelToWorld.rotateX(70);
       if (vy / 2 - y <= -70)
         modelToWorld.rotateX(-70);
-      camera_mat = modelToWorld;//apply to the node
+      camera = modelToWorld;//apply to the node
     }
 
 

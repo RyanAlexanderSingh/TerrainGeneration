@@ -52,8 +52,10 @@ namespace octet {
       // draw the scene
       app_scene->render((float)vx / vy);
 
+      mat4t &camera = app_scene->get_camera_instance(0)->get_node()->access_nodeToParent();
       //run key_presses loop to check for inputs
-      inputs.key_presses(app_scene->get_camera_instance(0)->get_node()->access_nodeToParent());
+      inputs.key_presses(camera);
+      inputs.mouse_control(camera);
 
       if (inputs.Q_KEY()){
         printf("Please wait...generating random terrain. This may take a while.");
@@ -199,73 +201,6 @@ namespace octet {
 
     void clear_data(){
 
-    }void key_presses(){
-
-      mat4t &camera_mat = app_scene->get_camera_instance(0)->get_node()->access_nodeToParent();
-
-      if (is_key_down(key_esc)){
-        exit(0);
-      }
-
-      //pressing Q generates the terrain using a random seed 
-      if (is_key_going_down('Q')){
-        printf("Please wait...generating random terrain. This may take a while.");
-        clear_data();
-        generate(false, true);
-      }
-      //Pressing R generates the the terrain using ken perlin's pseudo-random permutation table
-      if (is_key_going_down('E')){
-        clear_data();
-        generate(false, false);
-      }
-      //Pressing R generates the terrain reading in from a .PPM file, therefore not reading in from random seed
-      if (is_key_going_down('R')){
-        clear_data();
-        generate(true, false);
-      }
-
-      //camera movement keys (arrow keys and WASD)
-      if (is_key_down(key::key_shift))
-      {
-        camera_mat.translate(0, 5, 0);
-      }
-      if (is_key_down(key::key_ctrl))
-      {
-        camera_mat.translate(0, -5, 0);
-      }
-      if (is_key_down(key::key_up) || is_key_down('W'))
-      {
-        camera_mat.translate(0, 0, -5);
-      }
-      if (is_key_down(key::key_down) || is_key_down('S'))
-      {
-        camera_mat.translate(0, 0, 5);
-      }
-      if (is_key_down(key::key_left) || is_key_down('A'))
-      {
-        camera_mat.translate(-5, 0, 0);
-      }
-      if (is_key_down(key::key_right) || is_key_down('D'))
-      {
-        camera_mat.translate(5, 0, 0);
-      }
-    }
-
-    void mouse_control(int mouse_x, int mouse_y, int viewpoint_y){
-
-      mat4t &camera_mat = app_scene->get_camera_instance(0)->get_node()->access_nodeToParent();
-      mat4t modelToWorld;
-
-      modelToWorld.loadIdentity();
-      modelToWorld[3] = vec4(camera_mat.w().x(), camera_mat.w().y(), camera_mat.w().z(), 1);
-      modelToWorld.rotateY((float)-mouse_x*2.0f);
-      if (viewpoint_y / 2 - mouse_y < 70 && viewpoint_y / 2 - mouse_y > -70)
-        modelToWorld.rotateX((float)viewpoint_y / 2 - mouse_y);
-      if (viewpoint_y / 2 - mouse_y >= 70)
-        modelToWorld.rotateX(70);
-      if (viewpoint_y / 2 - mouse_y <= -70)
-        modelToWorld.rotateX(-70);
-      camera_mat = modelToWorld;//apply to the node
     }
   };
 }
