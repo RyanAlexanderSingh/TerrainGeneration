@@ -23,8 +23,6 @@ namespace octet {
     int width = 0, height = 0, size = 0, max_col_val = 255;
     std::vector<uint8_t> pixel_colour;
 
-
-    //check if we need
     unsigned int nr_lines, nr_columns;
 
     void init(int _height, int _width){

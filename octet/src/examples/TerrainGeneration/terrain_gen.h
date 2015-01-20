@@ -11,6 +11,7 @@ namespace octet {
 
     ppm ppm_image;
     perlin pn;
+    inputs inputs;
 
     // scene for drawing box
     ref<visual_scene> app_scene;
@@ -30,8 +31,9 @@ namespace octet {
       camera_mat.rotateY(-90);
       camera_mat.rotateX(0);
 
-      //start to generate the perlin noise for the terrain generation
-      generate(false);
+      inputs.init(this);
+
+      //generate(true, false);
 
       //create the shape for the skydome and texture it
       //TODO: update the skybox properly
@@ -50,11 +52,22 @@ namespace octet {
       // draw the scene
       app_scene->render((float)vx / vy);
 
-      key_presses();
+      //run key_presses loop to check for inputs
+      inputs.key_presses(app_scene->get_camera_instance(0)->get_node()->access_nodeToParent());
 
-      int mx, my;
-      get_mouse_pos(mx, my);
-      mouse_control(mx, my, vy);
+      if (inputs.Q_KEY()){
+        printf("Please wait...generating random terrain. This may take a while.");
+        clear_data();
+        generate(false, true);
+      }
+      if (inputs.R_KEY()){
+        clear_data();
+        generate(true, false);
+      }   
+      if (inputs.P_KEY()){
+        clear_data();
+        generate(false, false);
+      }
     }
 
     struct my_vertex {
@@ -75,7 +88,7 @@ namespace octet {
       return temp;
     }
 
-    void generate(bool from_image){
+    void generate(bool from_image, bool random_seed){
 
       int height = 0, width = 0;
 
@@ -120,7 +133,7 @@ namespace octet {
 
           if(!from_image) {
             // Typical Perlin noise
-            float n = pn.generate_noise(10.0f * x, 10.0f * y, 0.8f, 12, true);
+            float n = pn.generate_noise(10.0f * x, 10.0f * y, 0.8f, 12, random_seed);
             //cap the perlin noise to prevent it from going positive numbers
 
             // Map the values to the [0, 255] interval, for simplicity we use tones of grey
@@ -184,7 +197,9 @@ namespace octet {
       app_scene->add_mesh_instance(new mesh_instance(node, skydome, skybox_mat));
     }
 
-    void key_presses(){
+    void clear_data(){
+
+    }void key_presses(){
 
       mat4t &camera_mat = app_scene->get_camera_instance(0)->get_node()->access_nodeToParent();
 
@@ -192,7 +207,24 @@ namespace octet {
         exit(0);
       }
 
-      //camera movement keys
+      //pressing Q generates the terrain using a random seed 
+      if (is_key_going_down('Q')){
+        printf("Please wait...generating random terrain. This may take a while.");
+        clear_data();
+        generate(false, true);
+      }
+      //Pressing R generates the the terrain using ken perlin's pseudo-random permutation table
+      if (is_key_going_down('E')){
+        clear_data();
+        generate(false, false);
+      }
+      //Pressing R generates the terrain reading in from a .PPM file, therefore not reading in from random seed
+      if (is_key_going_down('R')){
+        clear_data();
+        generate(true, false);
+      }
+
+      //camera movement keys (arrow keys and WASD)
       if (is_key_down(key::key_shift))
       {
         camera_mat.translate(0, 5, 0);
