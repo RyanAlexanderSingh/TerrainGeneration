@@ -31,7 +31,7 @@ namespace octet {
       camera_mat.rotateX(0);
 
       //start to generate the perlin noise for the terrain generation
-      generate(true);
+      generate(false);
 
       //create the shape for the skydome and texture it
       //TODO: update the skybox properly
@@ -80,7 +80,7 @@ namespace octet {
       int height = 0, width = 0;
 
       if (from_image){
-        ppm_image.read("heightmap_exp1.ppm");
+        ppm_image.read("p1.ppm");
         height = ppm_image.height, width = ppm_image.width;
       }
       else{
@@ -120,7 +120,7 @@ namespace octet {
 
           if(!from_image) {
             // Typical Perlin noise
-            float n = pn.generate_noise(10.0f * x, 10.0f * y, 0.8f, 12, false);
+            float n = pn.generate_noise(10.0f * x, 10.0f * y, 0.8f, 12, true);
             //cap the perlin noise to prevent it from going positive numbers
 
             // Map the values to the [0, 255] interval, for simplicity we use tones of grey

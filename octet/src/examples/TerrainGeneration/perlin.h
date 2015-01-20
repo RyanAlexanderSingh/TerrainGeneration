@@ -4,8 +4,13 @@
 //
 // Parts of this class are a direct translation to C++11 from Ken Perlin's improved perlin function (http://mrl.nyu.edu/~perlin/noise/)
 //
+#ifndef PERLIN_H_INCLUDED
+
+
 #include <random>
 #include <numeric>
+#include <ctime>
+
 namespace octet {
   /// Scene containing a box with octet.
   class perlin : public resource {
@@ -70,13 +75,16 @@ namespace octet {
       float result = 0.0f;
       float amp = 1.0f;
 
+
       if (random_table){
         typedef std::default_random_engine random_seed;
-        uint8_t seed_val = 42; //TODO: randomize this seed val;
+        //using time to get a completely random seed every time the program is rerun
+        //TODO: potentially save each seed so we can get that iteration of the noise again
+        long int t = static_cast<long int> (time(NULL));
         random_seed rng;
-        rng.seed(seed_val);
+        rng.seed(t);
 
-        std::uniform_int_distribution<> dist255(0, 255);
+        std::uniform_int_distribution<int> dist255(0, 255);
 
         for (int i = 0; i < 256; ++i){
           permutation[i] = { (uint8_t)dist255(rng) };
@@ -109,3 +117,5 @@ namespace octet {
     107, 49, 192, 214, 31, 181, 199, 106, 157, 184, 84, 204, 176, 115, 121, 50, 45, 127, 4, 150, 254,
     138, 236, 205, 93, 222, 114, 67, 29, 24, 72, 243, 141, 128, 195, 78, 66, 215, 61, 156, 180 };
 }
+
+#endif
