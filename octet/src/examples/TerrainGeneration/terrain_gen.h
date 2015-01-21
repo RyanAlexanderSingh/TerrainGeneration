@@ -58,16 +58,18 @@ namespace octet {
       inputs.mouse_control(camera);
 
       if (inputs.Q_KEY()){
-        printf("Please wait...generating random terrain. This may take a while.");
-        clear_data();
+        printf("Please wait...generating random terrain. This may take a while.\n");
+        app_scene->pop_mesh_instance();     
         generate(false, true);
       }
       if (inputs.R_KEY()){
-        clear_data();
+        printf("Generating an example heightmap.\n");
+        app_scene->pop_mesh_instance();
         generate(true, false);
       }   
       if (inputs.P_KEY()){
-        clear_data();
+        printf("Generating a heightmap based on Ken Perlin's default permutation table.\n");
+        app_scene->pop_mesh_instance();
         generate(false, false);
       }
     }
@@ -197,10 +199,6 @@ namespace octet {
       scene_node *node = new scene_node();
       app_scene->add_child(node);
       app_scene->add_mesh_instance(new mesh_instance(node, skydome, skybox_mat));
-    }
-
-    void clear_data(){
-
     }
   };
 }
