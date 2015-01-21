@@ -72,9 +72,7 @@ namespace octet {
 
     //generates the wholer perlin noise given a certain number of octaves
     float generate_noise(float x, float y, float z, int _octaves, bool random_table){
-      float result = 0.0f;
-      float amp = 1.0f;
-
+      
 
       if (random_table){
         typedef std::default_random_engine random_seed;
@@ -91,15 +89,19 @@ namespace octet {
         }
       }
 
+      float result = 0.0f;
+      float amp = 1.0f;
+      float frequency = 1.0f;
+
+      float maxAmplitude = 0.0f;
       int i = _octaves;
       while (i--){
-        result += noise(x, y, z) * amp;
-        x *= 2.0f;
-        y *= 2.0f;
-        z *= 2.0f;
+        result += noise(x * frequency, y * frequency, z * frequency) * amp;
+        frequency *= 2.0f;
+        maxAmplitude += amp;
         amp *= 0.5f;
       }
-      return result;
+      return result / maxAmplitude;
     }
 
   };

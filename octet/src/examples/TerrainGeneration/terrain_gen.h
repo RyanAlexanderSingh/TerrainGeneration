@@ -33,7 +33,7 @@ namespace octet {
 
       inputs.init(this);
 
-      //generate(true, false);
+      generate(true, false);
 
       //create the shape for the skydome and texture it
       //TODO: update the skybox properly
@@ -59,18 +59,21 @@ namespace octet {
 
       if (inputs.Q_KEY()){
         printf("Please wait...generating random terrain. This may take a while.\n");
-        app_scene->pop_mesh_instance();     
+        app_scene->pop_mesh_instance();
         generate(false, true);
+        printf("Terrain successfully generated.\n");
       }
       if (inputs.R_KEY()){
         printf("Generating an example heightmap.\n");
         app_scene->pop_mesh_instance();
         generate(true, false);
-      }   
+        printf("Terrain successfully generated.\n");
+      }
       if (inputs.P_KEY()){
         printf("Generating a heightmap based on Ken Perlin's default permutation table.\n");
         app_scene->pop_mesh_instance();
         generate(false, false);
+        printf("Terrain successfully generated.\n");
       }
     }
 
@@ -128,36 +131,36 @@ namespace octet {
       //end of init
 
       unsigned int kk = 0;
-      
+
       // Visit every pixel of the image and assign a color generated with Perlin noise
       for (int i = 0; i < height; ++i) {     // y
         for (int j = 0; j < width; ++j) {  // x
           float x = 1.0f * j / width;
           float y = 1.0f * i / height;
 
-          if(!from_image) {
+          if (!from_image) {
             // Typical Perlin noise
-            float n = pn.generate_noise(10.0f * x, 10.0f * y, 0.8f, 12, random_seed);
+            float n = pn.generate_noise(10.0f * x, 10.0f * y, 0.8f, 8, random_seed);
             //cap the perlin noise to prevent it from going positive numbers
 
             // Map the values to the [0, 255] interval, for simplicity we use tones of grey
             ppm_image.pixel_colour[kk] = floorf(255.0f * n);
-           
+
           }
           float colour_mesh = (float)ppm_image.pixel_colour[kk] / 255.0f;
-                   
-          float vertex_height =  colour_mesh * 30.0f;
+
+          float vertex_height = colour_mesh * 30.0f;
           //printf("%f\n", actual_vert_height);
           vtx->pos = vec3p((float)j, vertex_height, (float)i);
           vtx->nor = vec3p((float)j, vertex_height, (float)i);
-         
+
           if (colour_mesh <= 0.1f)
-            vtx->color = make_color(0.0f, 0.0f, 1.0f); 
+            vtx->color = make_color(0.0f, 0.0f, 1.0f);
           else
-          if (colour_mesh <= 0.15f&&colour_mesh >= 0.1f)
-            vtx->color = make_color(0.0f, 0.65f, 0.0f);
-          else
-          vtx->color = make_color(colour_mesh, colour_mesh, colour_mesh);
+            if (colour_mesh <= 0.15f&&colour_mesh >= 0.1f)
+              vtx->color = make_color(0.0f, 0.65f, 0.0f);
+            else
+              vtx->color = make_color(colour_mesh, colour_mesh, colour_mesh);
 
           vtx++;
 
@@ -189,7 +192,7 @@ namespace octet {
       app_scene->add_mesh_instance(new mesh_instance(node, terrain, red));
 
       if (!from_image)
-      ppm_image.write("perlin_noise.ppm");
+        ppm_image.write("perlin_noise.ppm");
     }
 
     void create_skybox(){
