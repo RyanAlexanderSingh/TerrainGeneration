@@ -45,6 +45,27 @@ namespace octet {
       return false;
     }
 
+    bool G_KEY(){
+      if (the_app->is_key_going_down('G')){
+        return true;
+      }
+      return false;
+    }
+
+    bool PLUS_KEY(){
+      if (the_app->is_key_going_down(43)){
+        return true;
+      }
+      return false;
+    }
+
+
+    bool MINUS_KEY(){
+      if (the_app->is_key_going_down(45)){
+        return true;
+      }
+      return false;
+    }
     //misc. key presses such as camera movement and closing the program
     void key_presses(mat4t &camera){
 
@@ -61,19 +82,19 @@ namespace octet {
       {
         camera.translate(0, -5, 0);
       }
-      if (the_app->is_key_down(key::key_up) || the_app->is_key_down('W'))
+      if ( the_app->is_key_down('W'))
       {
         camera.translate(0, 0, -5);
       }
-      if (the_app->is_key_down(key::key_down) || the_app->is_key_down('S'))
+      if ( the_app->is_key_down('S'))
       {
         camera.translate(0, 0, 5);
       }
-      if (the_app->is_key_down(key::key_left) || the_app->is_key_down('A'))
+      if ( the_app->is_key_down('A'))
       {
         camera.translate(-5, 0, 0);
       }
-      if (the_app->is_key_down(key::key_right) || the_app->is_key_down('D'))
+      if ( the_app->is_key_down('D'))
       {
         camera.translate(5, 0, 0);
       }
