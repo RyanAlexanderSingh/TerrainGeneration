@@ -92,6 +92,16 @@ namespace octet {
 
     //generates the wholer perlin noise given a certain number of octaves
     float generate_noise(float x, float y, float z, int _octaves, bool random_table){
+      
+      //current time will be used as the random seed
+      time_t current_time = time(NULL);
+      srand((unsigned)current_time);
+
+      
+
+
+
+
 
       //generate random permutation table for perlin noise
       if (random_table){

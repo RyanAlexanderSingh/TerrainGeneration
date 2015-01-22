@@ -436,6 +436,9 @@
     <ClInclude Include="ppm.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="image.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\resources\mesh_builder.inl">
