@@ -4,11 +4,12 @@
 //
 // Main source is based off PPM.h by Sol of Solarian Programmer (https://solarianprogrammer.com/2011/12/16/cpp-11-thread-tutorial/)
 //
+#ifndef PPM_H_INCLUDED
+#define PPM_H_INCLUDED
 
-#include <iostream>
 #include <fstream>
-#include <sstream>
 #include <exception>
+#include <sstream>
 
 namespace octet {
   /// Scene containing a box with octet.
@@ -57,10 +58,9 @@ namespace octet {
           dimensions >> height;
           nr_lines = height;
           nr_columns = width;
-          printf("%i, %i", height, width);
         }
         catch (std::exception &e) {
-          std::cout << "Header file format error. " << e.what() << std::endl;
+        printf("Header file format error. \n", e.what());
           return;
         }
 
@@ -70,7 +70,7 @@ namespace octet {
           max_val >> max_col_val;
         }
         catch (std::exception &e) {
-          std::cout << "Header file format error. " << e.what() << std::endl;
+          printf("Header file format error. \n", e.what());
           return;
         }
 
@@ -83,6 +83,7 @@ namespace octet {
         for (int i = 0; i < size; ++i) {
           for (int j = 0; j < 3; ++j){
             input.read(&aux, 1);
+            //the RGB colour values are stored together so we'll just take the last one (they're all the same)
             if (j == 2){           
               pixel_colour[i] = (unsigned char)aux;
             }
@@ -90,7 +91,7 @@ namespace octet {
         }
       }
       else {
-        printf("Error, unable to oepn %s", fname);
+        printf("Error, unable to open %s", fname);
       }
       input.close();
     }
@@ -101,6 +102,7 @@ namespace octet {
       std::ofstream input(fname.c_str(), std::ios::out | std::ios::binary);
       if (input.is_open()){
 
+        //P6 complies with .ppm file formats
         input << "P6\n";
         input << width;
         input << " ";
@@ -123,4 +125,4 @@ namespace octet {
     }
   };
 }
-
+#endif

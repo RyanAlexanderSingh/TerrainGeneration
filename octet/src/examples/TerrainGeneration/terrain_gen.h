@@ -5,6 +5,9 @@
 // Modular Framework for OpenGLES2 rendering on multiple platforms.
 //
 
+#ifndef TERRAIN_GEN_H_INCLUDED
+#define TERRAIN_GEN_H_INCLUDED
+
 namespace octet {
   /// Scene containing a box with octet.
   class terrain_gen : public app {
@@ -33,7 +36,7 @@ namespace octet {
 
       inputs.init(this);
 
-      generate(true, false);
+      generate(false, false);
 
       //create the shape for the skydome and texture it
       //TODO: update the skybox properly
@@ -100,7 +103,7 @@ namespace octet {
       int height = 0, width = 0;
 
       if (from_image){
-        ppm_image.read("p1.ppm");
+        ppm_image.read("blacknwhitefbm.ppm");
         height = ppm_image.height, width = ppm_image.width;
       }
       else{
@@ -138,32 +141,31 @@ namespace octet {
           float x = 1.0f * j / width;
           float y = 1.0f * i / height;
 
+         
           if (!from_image) {
             // Typical Perlin noise
-            float n = pn.generate_noise(10.0f * x, 10.0f * y, 0.8f, 8, random_seed);
+            float n = pn.generate_noise(x, y, 0.8f, 8, random_seed);
             //cap the perlin noise to prevent it from going positive numbers
 
             // Map the values to the [0, 255] interval, for simplicity we use tones of grey
-            ppm_image.pixel_colour[kk] = floorf(255.0f * n);
-
+            ppm_image.pixel_colour[kk] = 255.0f  * n;
           }
-          float colour_mesh = (float)ppm_image.pixel_colour[kk] / 255.0f;
 
+          float colour_mesh = (float)ppm_image.pixel_colour[kk] / 255.0f;
           float vertex_height = colour_mesh * 30.0f;
-          //printf("%f\n", actual_vert_height);
           vtx->pos = vec3p((float)j, vertex_height, (float)i);
           vtx->nor = vec3p((float)j, vertex_height, (float)i);
 
-          if (colour_mesh <= 0.1f)
+          if (colour_mesh <= 0.1f){
             vtx->color = make_color(0.0f, 0.0f, 1.0f);
-          else
-            if (colour_mesh <= 0.15f&&colour_mesh >= 0.1f)
-              vtx->color = make_color(0.0f, 0.65f, 0.0f);
-            else
-              vtx->color = make_color(colour_mesh, colour_mesh, colour_mesh);
-
+          }
+          else if (colour_mesh <= 0.15f&&colour_mesh >= 0.1f){
+            vtx->color = make_color(0.0f, 0.65f, 0.0f);
+          }
+          else {
+            vtx->color = make_color(colour_mesh, colour_mesh, colour_mesh);
+          }
           vtx++;
-
           kk++;
         }
       }
@@ -191,8 +193,7 @@ namespace octet {
       app_scene->add_child(node);
       app_scene->add_mesh_instance(new mesh_instance(node, terrain, red));
 
-      if (!from_image)
-        ppm_image.write("perlin_noise.ppm");
+      ppm_image.write("perlin_noise.ppm");
     }
 
     void create_skybox(){
@@ -205,3 +206,4 @@ namespace octet {
     }
   };
 }
+#endif

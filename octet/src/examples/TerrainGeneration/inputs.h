@@ -3,7 +3,8 @@
 // (C) Ryan Singh and Himanshu Chablani
 //
 
-
+#ifndef INPUTS_H_INCLUDED
+#define INPUTS_H_INCLUDED
 namespace octet {
   /// Scene containing a box with octet.
   class inputs : public resource {
@@ -105,3 +106,4 @@ namespace octet {
   };
 }
 
+#endif

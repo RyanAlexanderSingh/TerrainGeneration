@@ -5,7 +5,7 @@
 // Parts of this class are a direct translation to C++11 from Ken Perlin's improved perlin function (http://mrl.nyu.edu/~perlin/noise/)
 //
 #ifndef PERLIN_H_INCLUDED
-
+#define PERLIN_H_INCLUDED
 
 #include <random>
 #include <numeric>
@@ -70,17 +70,18 @@ namespace octet {
       return (res + 1.0f) / 2.0f;
     }
 
-    //generates the wholer perlin noise given a certain number of octaves
-    float generate_noise(float x, float y, float z, int _octaves, bool random_table){
-      
 
-      if (random_table){
+
+    //generates the wholer perlin noise given a certain number of octaves
+    float generate_noise(float x, float y, float z, int _octaves, bool random_seed){
+
+      if (random_seed){
         typedef std::default_random_engine random_seed;
         //using time to get a completely random seed every time the program is rerun
         //TODO: potentially save each seed so we can get that iteration of the noise again
-        long int t = static_cast<long int> (time(NULL));
+        //long int t = static_cast<long int> (time(NULL));
         random_seed rng;
-        rng.seed(t);
+        rng.seed(123);
 
         std::uniform_int_distribution<int> dist255(0, 255);
 
@@ -88,23 +89,38 @@ namespace octet {
           permutation[i] = { (uint8_t)dist255(rng) };
         }
       }
-
+      
       float result = 0.0f;
       float amp = 1.0f;
-      float frequency = 1.0f;
+      float frequency = 2.0f;
 
       float maxAmplitude = 0.0f;
       int i = _octaves;
       while (i--){
-        result += noise(x * frequency, y * frequency, z * frequency) * amp;
-        frequency *= 2.0f;
-        maxAmplitude += amp;
-        amp *= 0.5f;
+      result += noise(x * frequency, y * frequency, z * frequency) * amp;
+      frequency *= 2.0f;
+      maxAmplitude += amp;
+      amp *= 0.5f;
       }
       return result / maxAmplitude;
-    }
+      }
 
+      /*float result = 0.0f;
+      float frequency = 1.0f;
+      float amplitude = 1.0f;
+      float gain = 0.5f;
+      float lacunarity = 2.0f;
+      float maxAmplitude = 0.0f;
+      for (int i = 0; i < _octaves; ++i){
+        result += amplitude * noise(x * frequency, y * frequency, z * frequency);
+        amplitude *= gain;
+        frequency *= lacunarity;
+        maxAmplitude += amplitude;
+      }
+      return result / maxAmplitude;
+    }*/
   };
+
   uint8_t perlin::permutation[] = {
     151, 160, 137, 91, 90, 15, 131, 13, 201, 95, 96, 53, 194, 233, 7, 225, 140, 36, 103, 30, 69, 142,
     8, 99, 37, 240, 21, 10, 23, 190, 6, 148, 247, 120, 234, 75, 0, 26, 197, 62, 94, 252, 219, 203, 117,
