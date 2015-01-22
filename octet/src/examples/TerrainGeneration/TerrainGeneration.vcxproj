@@ -215,7 +215,6 @@
     <ClInclude Include="..\..\shaders\shader.h" />
     <ClInclude Include="..\..\shaders\shaders.h" />
     <ClInclude Include="..\..\shaders\texture_shader.h" />
-    <ClInclude Include="inputs.h" />
     <ClInclude Include="perlin.h" />
     <ClInclude Include="ppm.h" />
     <ClInclude Include="terrain_gen.h" />
