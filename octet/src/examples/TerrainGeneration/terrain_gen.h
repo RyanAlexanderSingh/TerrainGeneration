@@ -136,7 +136,7 @@ namespace octet {
           generate(false, false);
           setup_pop_up(4);
           break;
-    }
+        }
 
       }
 
@@ -164,17 +164,16 @@ namespace octet {
           if (grass_pert_from <= grass_pert_to)
           {
             grass_pert_from += 0.01f;
-    }
+          }
           break;
 
         case 5:
           if (grass_pert_to <= ice_pert_from)
-    {
+          {
             grass_pert_to += 0.01f;
-    }
+          }
           break;
         }
-
       }
 
       if (is_key_down(key::key_down))
@@ -192,19 +191,19 @@ namespace octet {
           break;
         case 3: if (water_pert_to >= water_pert_from)
         {
-          water_pert_to -= 0.01f;
+                  water_pert_to -= 0.01f;
         }
-        break;
-        case 4: if (grass_pert_from >=water_pert_to)
+                break;
+        case 4: if (grass_pert_from >= water_pert_to)
         {
-          grass_pert_from-=0.01f;
+                  grass_pert_from -= 0.01f;
         }
-        break;
+                break;
         case 5: if (grass_pert_to >= grass_pert_from)
         {
-          grass_pert_to-=0.01f;
+                  grass_pert_to -= 0.01f;
         }
-        break;
+                break;
         }
       }
 
@@ -230,11 +229,11 @@ namespace octet {
       int height = 0, width = 0;
 
       if (from_image){
-        ppm_image.read("blacknwhitefbm.ppm");
+        ppm_image.read("p1.ppm");
         height = ppm_image.height, width = ppm_image.width;
       }
       else{
-        height = 450, width = 650;
+        height = 500, width = 500;
         ppm_image.init(height, width);
       }
 
@@ -262,55 +261,68 @@ namespace octet {
 
       unsigned int kk = 0;
       my_vertex *basevert = vtx;
-      float higest_point=0.0f;
-      float lowest_point=100.0f;
+      float higest_point = 0.0f;
+      float lowest_point = 100.0f;
 
+      float temp_low = 1.0f;
+      float temp_high = 0.0f;
       // Visit every pixel of the image and assign a color generated with Perlin noise
       for (int i = 0; i < height; ++i) {     // y
         for (int j = 0; j < width; ++j) {  // x
           float x = 1.0f * j / width;
           float y = 1.0f * i / height;
 
-         
+
           if (!from_image) {
             // Typical Perlin noise
-            float n = pn.generate_noise(x, y, 0.8f, 8, random_seed);
+            float n = pn.generate_noise(x, y, 0.8f, 16, random_seed);
             //cap the perlin noise to prevent it from going positive numbers
 
             // Map the values to the [0, 255] interval, for simplicity we use tones of grey
-            ppm_image.pixel_colour[kk] = 255.0f  * n;
+            ppm_image.pixel_colour[kk] = n;
+
+            /*if (n < temp_low){
+              temp_low = n;
+              printf("low: %f \n ", temp_low);
+            }
+            if (n > temp_high){
+              temp_high = n;
+              printf(" high:  %f \n", temp_high);
+            }*/
+
           }
 
-          float colour_mesh = (float)ppm_image.pixel_colour[kk] / 255.0f;
+          float colour_mesh = (float)ppm_image.pixel_colour[kk];
           float vertex_height = colour_mesh * 30.0f;
           vtx->pos = vec3p((float)j, vertex_height, (float)i);
           vtx->nor = vec3p((float)j, vertex_height, (float)i);
-          if(use_colour_map)
+          if (use_colour_map)
           {
-          if (vertex_height >= water_pert_from && vertex_height <= water_pert_to)
-            vtx->color = make_color(0.0f, 0.0f, 1.0f);
-          else
+            if (vertex_height >= water_pert_from && vertex_height <= water_pert_to)
+              vtx->color = make_color(0.0f, 0.0f, 1.0f);
+            else
             if (vertex_height >= grass_pert_from && vertex_height <= grass_pert_to)
               vtx->color = make_color(0.0f, 0.65f, 0.0f);
             else
-              if (vertex_height >= ice_pert_from && vertex_height <= ice_pert_to)
-              {
-                vtx->color = make_color(0.647f, 0.949f, 0.95f);
-              }
-              else
-                vtx->color = make_color(0.3294f, 0.2705f, 0.1803f);
+            if (vertex_height >= ice_pert_from && vertex_height <= ice_pert_to)
+            {
+              vtx->color = make_color(0.647f, 0.949f, 0.95f);
+            }
+            else
+              vtx->color = make_color(0.3294f, 0.2705f, 0.1803f);
           }
           else
           {
             if (vertex_height >= higest_point)
             {
-              higest_point=vertex_height;
+              higest_point = vertex_height;
             }
             if (vertex_height <= lowest_point)
             {
-              lowest_point=vertex_height;
+              lowest_point = vertex_height;
             }
           }
+          vtx->color = make_color(ppm_image.pixel_colour[kk], ppm_image.pixel_colour[kk], ppm_image.pixel_colour[kk]);
           vtx++;
           kk++;
         }
@@ -318,35 +330,36 @@ namespace octet {
 
       if (!use_colour_map)
       {
-      use_colour_map=true;//make this false when the user wants us to find a colour map
-      vtx = basevert;
-      float height_change_value = (higest_point-lowest_point)/2.0f;
-      ice_pert_from = higest_point-height_change_value/2.0f;
-      ice_pert_to  =  higest_point;
+        use_colour_map = true;//make this false when the user wants us to find a colour map
+        vtx = basevert;
+        float height_change_value = (higest_point - lowest_point) / 2.0f;
+        ice_pert_from = higest_point - height_change_value / 2.0f;
+        ice_pert_to = higest_point;
 
-      water_pert_from = lowest_point;
-      water_pert_to = lowest_point + height_change_value/8;
+        water_pert_from = lowest_point;
+        water_pert_to = lowest_point + height_change_value / 8;
 
-      grass_pert_from = lowest_point + height_change_value / 3;
-      grass_pert_to = grass_pert_from + height_change_value / 8;
-      
-      for (int i=0;i<height*width;i++)
-      {
-        float vertex_height = vtx->pos.y();        
-        if (vertex_height >= water_pert_from && vertex_height <= water_pert_to)
-          vtx->color = make_color(0.0f, 0.0f, 1.0f);
-        else
+        grass_pert_from = lowest_point + height_change_value / 3;
+        grass_pert_to = grass_pert_from + height_change_value / 8;
+
+        for (int i = 0; i < height*width; i++)
+        {
+          float vertex_height = vtx->pos.y();
+          if (vertex_height >= water_pert_from && vertex_height <= water_pert_to)
+            vtx->color = make_color(0.0f, 0.0f, 1.0f);
+          else
           if (vertex_height >= grass_pert_from && vertex_height <= grass_pert_to)
             vtx->color = make_color(0.0f, 0.65f, 0.0f);
           else
-            if (vertex_height >= ice_pert_from && vertex_height <= ice_pert_to)
-            {
-              vtx->color = make_color(0.647f, 0.949f, 0.95f);
-            }
-            else
-              vtx->color = make_color(0.3294f, 0.2705f, 0.1803f);
-              vtx++;
-      }
+          if (vertex_height >= ice_pert_from && vertex_height <= ice_pert_to)
+          {
+            vtx->color = make_color(0.647f, 0.949f, 0.95f);
+          }
+          else
+
+            vtx++;
+          kk++;
+        }
       }
       int tempvert = 0;
       for (int i = 0; i < height - 1; ++i) {
@@ -371,7 +384,7 @@ namespace octet {
       app_scene->add_child(node);
       app_scene->add_mesh_instance(new mesh_instance(node, terrain, red));
 
-        ppm_image.write("perlin_noise.ppm");
+      ppm_image.write("perlin_noise.ppm");
     }
 
 
@@ -482,7 +495,7 @@ namespace octet {
       aabb bb_top(vec3(vx * 1 / 8, 200, 0.0f), vec3(vx, 200.0f, 0.0f));
       UI_top = new mesh_text(font, "", &bb_top);
 
-      aabb bb_popup(vec3(vx * 7/ 8, -240, 0.0f), vec3(vx, 200.0f, 0.0f));
+      aabb bb_popup(vec3(vx * 7 / 8, -240, 0.0f), vec3(vx, 200.0f, 0.0f));
       UI_popup = new mesh_text(font, "", &bb_popup);
 
       aabb bb_target(vec3(vx, -100, 0.0f), vec3(vx, 100.0f, 0.0f));
@@ -513,7 +526,7 @@ namespace octet {
     float grass_pert_from;
 
     int selected_attrib = 0;
-    bool use_colour_map=false;
+    bool use_colour_map = true;
 
     void setup_pop_up(int num)
     {

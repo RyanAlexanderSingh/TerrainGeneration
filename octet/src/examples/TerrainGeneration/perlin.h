@@ -29,9 +29,18 @@ namespace octet {
     }
 
     float lerp(float t, float a, float b){
-      return a + t * (b - a);
+      //return a + t * (b - a);
+      return (t + b * a * (1 - b)); //check this 
     }
 
+    float dotproduct(float grad[], float x, float y){
+      return ((grad[0] * x) + (grad[1] * y)); //check this
+    }
+
+    int floor(float x){
+      return (x >= 0 ? int(x) : int(x) - 1);
+    }
+      
     float grad(int hash, float x, float y, float z){
       int h = hash & 15;
       float u = h < 8 ? x : y,
@@ -70,55 +79,52 @@ namespace octet {
       return (res + 1.0f) / 2.0f;
     }
 
+    float random(float max){
+      int r;
+      float s;
+
+      r = rand();
+      s = (float)(r & 0x7fff) / (float)0x7fff;
+
+      return (s * max);
+    }
 
 
     //generates the wholer perlin noise given a certain number of octaves
-    float generate_noise(float x, float y, float z, int _octaves, bool random_seed){
+    float generate_noise(float x, float y, float z, int _octaves, bool random_table){
 
-      if (random_seed){
-        typedef std::default_random_engine random_seed;
-        //using time to get a completely random seed every time the program is rerun
-        //TODO: potentially save each seed so we can get that iteration of the noise again
-        //long int t = static_cast<long int> (time(NULL));
-        random_seed rng;
-        rng.seed(123);
-
-        std::uniform_int_distribution<int> dist255(0, 255);
+      //generate random permutation table for perlin noise
+      if (random_table){
 
         for (int i = 0; i < 256; ++i){
-          permutation[i] = { (uint8_t)dist255(rng) };
+          permutation[i] = i;//put each number in once
+        }
+        //randomize the random numbers table
+        for (int i = 0; i < 256; ++i)
+        {
+          int j = (int)random(256);
+          int k = permutation[i];
+          permutation[i] = permutation[j];
+          permutation[j] = k;
         }
       }
-      
-      float result = 0.0f;
-      float amp = 1.0f;
-      float frequency = 2.0f;
 
-      float maxAmplitude = 0.0f;
+
+      float result = 0.0f;
+      float gain = 0.65f;
+      float amp = 1.0f;
+      float frequency = 1.0f / 500.0f;
+      float lacunarity = 2.0f;
+      
       int i = _octaves;
       while (i--){
-      result += noise(x * frequency, y * frequency, z * frequency) * amp;
-      frequency *= 2.0f;
-      maxAmplitude += amp;
-      amp *= 0.5f;
-      }
-      return result / maxAmplitude;
-      }
-
-      /*float result = 0.0f;
-      float frequency = 1.0f;
-      float amplitude = 1.0f;
-      float gain = 0.5f;
-      float lacunarity = 2.0f;
-      float maxAmplitude = 0.0f;
-      for (int i = 0; i < _octaves; ++i){
-        result += amplitude * noise(x * frequency, y * frequency, z * frequency);
-        amplitude *= gain;
+        result += noise(x * frequency, y * frequency, z * frequency) * amp;
+        amp *= gain;
         frequency *= lacunarity;
-        maxAmplitude += amplitude;
       }
-      return result / maxAmplitude;
-    }*/
+      printf("%f", result);
+      return result;
+    }
   };
 
   uint8_t perlin::permutation[] = {
