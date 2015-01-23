@@ -436,6 +436,12 @@
     <ClInclude Include="bmp_image.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="UI.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sky_box.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\resources\mesh_builder.inl">

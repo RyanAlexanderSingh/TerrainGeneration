@@ -9,6 +9,8 @@
 
 #include "../../octet.h"
 
+#include "UI.h"
+#include "sky_box.h"
 #include "bmp_image.h"
 #include "perlin.h"
 #include "inputs.h"
