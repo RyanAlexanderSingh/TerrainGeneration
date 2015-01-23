@@ -16,6 +16,7 @@ namespace octet {
     //bmp_image img;
     perlin pn;
     inputs inputs;
+    bmp_image img_gen;
 
     // scene for drawing box
     ref<visual_scene> app_scene;
@@ -264,6 +265,8 @@ namespace octet {
 
       float min = 0.0f, max = 0.0f;
       pn.fill_image(min, max, 16);
+
+      
 
 
 

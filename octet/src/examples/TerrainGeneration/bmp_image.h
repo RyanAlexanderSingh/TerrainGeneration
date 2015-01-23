@@ -7,7 +7,7 @@
 #ifndef BMP_IMAGE_H_INCLUDED
 #define BMP_IMAGE_H_INCLUDED
 
-#include <cstdlib>
+
 #include <iostream>
 #include <exception>
 #include <fstream>

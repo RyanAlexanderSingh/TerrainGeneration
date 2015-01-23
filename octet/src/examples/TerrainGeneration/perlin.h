@@ -1,9 +1,4 @@
 
-#include <cstdlib>
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <cmath>
 #include <ctime>
 
 using namespace std;
@@ -21,6 +16,25 @@ namespace octet {
     //const varibles for height and width of bmp image
     static const unsigned height = 500, width = 500;
 
+    int floor(float value)
+    {
+      return (value >= 0 ? (int)value : (int)value - 1);
+    }
+
+    float dotproduct(float grad[], float x, float y)
+    {
+      return (grad[0] * x + grad[1] * y);
+    }
+
+    float lerp(float t, float a, float b)
+    {
+      return ((1 - b) * t + b * a);
+    }
+
+
+    float fade(float t){
+      return t * t * t * (t * (t * 6 - 15) + 10);
+    }
 
     //rand number generator
     float random(float max){
@@ -37,28 +51,21 @@ namespace octet {
     {
       bmp_image img_gen;
 
-      time_t beginning = time(NULL); //use time for our random seed
-      srand((unsigned)beginning);//set the random seed
-      
+
+
       float image[height][width];//make the empty array 
 
       //change this
       int xpos, ypos,
-       grad11, grad12, grad21, grad22;
-        
-        //number of times to iterate through the fbm loop
-        int octaves = _octaves;
-        
+        grad11, grad12, grad21, grad22;
+
+      //number of times to iterate through the fbm loop
+      int octaves = _octaves;
+
       float result,
         fractional_x, fractional_y,
         noise11, noise12, noise21, noise22,
         interpolatedx1, interpolatedx2, interpolatedxy;
-      
-      //fractional brownian motion variables - change for differen effects
-      float amplitude = 0.0f;
-      float frequency = 0.0f;
-      float gain = 0.65f;
-      float lacunarity = 2.0f;
 
       //set up the gradient table with 8 equally distributed angles around the unit circle
       float gradients[8][2];
@@ -68,6 +75,9 @@ namespace octet {
         gradients[i][1] = sin(0.785398163f * (float)i);
       }
 
+      time_t beginning = time(NULL); //use time for our random seed
+      srand((unsigned)beginning);//set the random seed
+
       //set up the permutation table (not using ken perlin's pseudo random table)
       int permutations[256]; //using 256 numbers though (same as the pseudo random table)
       for (int i = 0; i < 256; ++i)
@@ -76,7 +86,7 @@ namespace octet {
       //randomize the positions of the permutation table (or we'll get the same effect every time)
       for (int i = 0; i < 256; ++i)
       {
-       int _rand = (int)random(256);
+        int _rand = (int)random(256);
         int j = permutations[i];
         permutations[i] = permutations[_rand];
         permutations[_rand] = j;
@@ -86,6 +96,11 @@ namespace octet {
       min = 100000.0f;
       max = -100000.0f;
 
+      //fractional brownian motion variables - change for differen effects
+      float amplitude = 0.0f;
+      float frequency = 0.0f;
+      float gain = 0.65f;
+      float lacunarity = 2.0f;
       // Visit every pixel of the image and assign a color generated with Perlin noise and FBM
       for (int i = 0; i < width; ++i)
       {
@@ -142,26 +157,6 @@ namespace octet {
         }
       }
       img_gen.write(image, min, max);
-    }
-
-
-    int floor(float value)
-    {
-      return (value >= 0 ? (int)value : (int)value - 1);
-    }
-
-    float dotproduct(float grad[], float x, float y)
-    {
-      return (grad[0] * x + grad[1] * y);
-    }
-
-    float lerp(float t, float a, float b)
-    {
-      return ((1 - b) * t + b * a);
-    }
-
-    float fade(float t){
-      return t * t * t * (t * (t * 6 - 15) + 10);
     }
   };
 }
