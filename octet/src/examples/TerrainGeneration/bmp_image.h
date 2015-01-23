@@ -4,12 +4,11 @@
 //
 // Main source is based off PPM.h by Sol of Solarian Programmer (https://solarianprogrammer.com/2011/12/16/cpp-11-thread-tutorial/)
 //
+
 #ifndef BMP_IMAGE_H_INCLUDED
 #define BMP_IMAGE_H_INCLUDED
 
-
 #include <iostream>
-#include <exception>
 #include <fstream>
 
 using namespace std;
@@ -37,11 +36,11 @@ namespace octet {
     //const varibles for height and width of bmp image
     static const unsigned height = 500, width = 500;
 
-    colour lerpt(colour c1, colour c2, float value){
+    colour lerp(colour c1, colour c2, float value){
       colour tcolor(0, 0, 0);
 
-      for (int g = 0; g<3; g++){
-        if (c1.v[g]>c2.v[g]){
+      for (int g = 0; g < 3; g++){
+        if (c1.v[g] > c2.v[g]){
           tcolor.v[g] = c2.v[g] + (unsigned char)(float(c1.v[g] - c2.v[g])*value);
         }
         else{
@@ -73,56 +72,50 @@ namespace octet {
         mountlow(147, 157, 167),
         mounthigh(226, 223, 216);
 
-      //3.0 output to file
-      //3.1 Begin the file
-      //3.1.1 open output file
-      ofstream out;
-      out.open("tester.bmp", ofstream::binary);
-      if (!(out.is_open())){
+      //creat a new stream and open the file
+      //start writing to the file
+      ofstream s;
+      s.open("perlin_noise.bmp", ofstream::binary);
+      if (!(s.is_open())){
         printf("Cannot open the file...");
         exit(0);
       }
 
-      //3.1.2 copy the header
-      //3.1.2.1 magic number
-      out.put(char(66));
-      out.put(char(77));
+      s.put(char(66));
+      s.put(char(77));
 
-      //3.1.2.2 filsize/unused space
-      for (i = 0; i < 8; i++)
-        out.put(char(0));
+      for (i = 0; i < 8; i++){
+        s.put(char(0));
+      }
+      s.put(char(54));
 
-      //3.1.2.3 data offset
-      out.put(char(54));
+      for (i = 0; i < 3; i++){
+        s.put(char(0));
+      }
 
-      //3.1.2.4 unused space
-      for (i = 0; i < 3; i++)
-        out.put(char(0));
+      s.put(char(40));
 
-      //3.1.2.5 header size
-      out.put(char(40));
+      //white space - ignore this place
+      for (i = 0; i < 3; i++){
+        s.put(char(0));
+      }
+      s.put(char(height % 256));
+      s.put(char((height >> 8) % 256));
+      s.put(char((height >> 16) % 256));
+      s.put(char((height >> 24) % 256));
 
-      //3.1.2.6 unused space
-      for (i = 0; i < 3; i++)
-        out.put(char(0));
+      s.put(char(width % 256));
+      s.put(char((width >> 8) % 256));
+      s.put(char((width >> 16) % 256));
+      s.put(char((width >> 24) % 256));
 
-      out.put(char(height % 256));
-      out.put(char((height >> 8) % 256));
-      out.put(char((height >> 16) % 256));
-      out.put(char((height >> 24) % 256));
+      s.put(char(1));
+      s.put(char(0));
 
-      out.put(char(width % 256));
-      out.put(char((width >> 8) % 256));
-      out.put(char((width >> 16) % 256));
-      out.put(char((width >> 24) % 256));
-
-      out.put(char(1));
-      out.put(char(0));
-
-      out.put(char(24));
+      s.put(char(24));
 
       for (i = 0; i < 25; i++){
-        out.put(char(0));
+        s.put(char(0));
       }
 
       colour newcolor(0, 0, 0);
@@ -131,28 +124,28 @@ namespace octet {
           image[j][i] -= _min;
           //if this point is below the floodline...
           if (image[j][i]<flood)
-            newcolor = lerpt(waterlow, waterhigh, image[j][i] / flood);
+            newcolor = lerp(waterlow, waterhigh, image[j][i] / flood);
 
           //if this is above the mountain line...
           else if (image[j][i]>mount)
-            newcolor = lerpt(mountlow, mounthigh, (image[j][i] - mount) / (diff - mount));
+            newcolor = lerp(mountlow, mounthigh, (image[j][i] - mount) / (diff - mount));
 
           //if this is regular land
           else
-            newcolor = lerpt(landlow, landhigh, (image[j][i] - flood) / (mount - flood));
+            newcolor = lerp(landlow, landhigh, (image[j][i] - flood) / (mount - flood));
 
-          out.put(char(newcolor.v[0]));
-          out.put(char(newcolor.v[1]));
-          out.put(char(newcolor.v[2]));
+          s.put(char(newcolor.v[0]));
+          s.put(char(newcolor.v[1]));
+          s.put(char(newcolor.v[2]));
         }
         //null terminate the buffer
         for (k = 0; k < (height % 4); k++)
-          out.put(char(0));
+          s.put(char(0));
       }
 
       //end the file (close it)
-      out.close();
-      }
+      s.close();
+    }
   };
 }
 #endif

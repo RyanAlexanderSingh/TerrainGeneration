@@ -1,5 +1,11 @@
+////////////////////////////////////////////////////////////////////////////////
+//
+// (C) Ryan Singh and Himanshu Chablani
+//
+// SOURCE INFORMATION HERE
+//
 
-#include <ctime>
+#include <time.h>
 
 using namespace std;
 
@@ -31,7 +37,6 @@ namespace octet {
       return ((1 - b) * t + b * a);
     }
 
-
     float fade(float t){
       return t * t * t * (t * (t * 6 - 15) + 10);
     }
@@ -50,8 +55,6 @@ namespace octet {
     void fill_image(float &min, float &max, float _octaves)
     {
       bmp_image img_gen;
-
-
 
       float image[height][width];//make the empty array 
 

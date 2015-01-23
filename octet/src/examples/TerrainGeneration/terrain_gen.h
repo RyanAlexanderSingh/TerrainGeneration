@@ -194,17 +194,17 @@ namespace octet {
           break;
         case 3: if (water_pert_to >= water_pert_from)
         {
-                  water_pert_to -= 0.01f;
+          water_pert_to -= 0.01f;
         }
                 break;
         case 4: if (grass_pert_from >= water_pert_to)
         {
-                  grass_pert_from -= 0.01f;
+          grass_pert_from -= 0.01f;
         }
                 break;
         case 5: if (grass_pert_to >= grass_pert_from)
         {
-                  grass_pert_to -= 0.01f;
+          grass_pert_to -= 0.01f;
         }
                 break;
         }
@@ -228,10 +228,10 @@ namespace octet {
     }
 
     void generate(bool from_image, bool random_seed){
-      
-      
 
-      int height = 5, width =2;
+
+
+      int height = 5, width = 2;
 
       //the mesh generatiion
       param_shader *shader = new param_shader("shaders/default.vs", "shaders/simple_color.fs");
@@ -266,17 +266,13 @@ namespace octet {
       float min = 0.0f, max = 0.0f;
       pn.fill_image(min, max, 16);
 
-      
-
-
-
       // Visit every pixel of the image and assign a color generated with Perlin noise
       for (int i = 0; i < height; ++i) {     // y
         for (int j = 0; j < width; ++j) {  // x
           float x = 1.0f * j / width;
           float y = 1.0f * i / height;
 
-          
+
 
           //if (!from_image) {
           //  // Typical Perlin noise
@@ -306,15 +302,15 @@ namespace octet {
             if (vertex_height >= water_pert_from && vertex_height <= water_pert_to)
               vtx->color = make_color(0.0f, 0.0f, 1.0f);
             else
-            if (vertex_height >= grass_pert_from && vertex_height <= grass_pert_to)
-              vtx->color = make_color(0.0f, 0.65f, 0.0f);
-            else
-            if (vertex_height >= ice_pert_from && vertex_height <= ice_pert_to)
-            {
+              if (vertex_height >= grass_pert_from && vertex_height <= grass_pert_to)
+                vtx->color = make_color(0.0f, 0.65f, 0.0f);
+              else
+                if (vertex_height >= ice_pert_from && vertex_height <= ice_pert_to)
+                {
               vtx->color = make_color(0.647f, 0.949f, 0.95f);
-            }
-            else
-              vtx->color = make_color(0.3294f, 0.2705f, 0.1803f);
+                }
+                else
+                  vtx->color = make_color(0.3294f, 0.2705f, 0.1803f);
           }
           else
           {
@@ -353,16 +349,14 @@ namespace octet {
           if (vertex_height >= water_pert_from && vertex_height <= water_pert_to)
             vtx->color = make_color(0.0f, 0.0f, 1.0f);
           else
-          if (vertex_height >= grass_pert_from && vertex_height <= grass_pert_to)
-            vtx->color = make_color(0.0f, 0.65f, 0.0f);
-          else
-          if (vertex_height >= ice_pert_from && vertex_height <= ice_pert_to)
-          {
+            if (vertex_height >= grass_pert_from && vertex_height <= grass_pert_to)
+              vtx->color = make_color(0.0f, 0.65f, 0.0f);
+            else
+              if (vertex_height >= ice_pert_from && vertex_height <= ice_pert_to)
+              {
             vtx->color = make_color(0.647f, 0.949f, 0.95f);
-          }
-          else
-
-            vtx++;
+              }
+          vtx++;
           kk++;
         }
       }
