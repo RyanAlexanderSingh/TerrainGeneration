@@ -59,6 +59,7 @@ namespace octet {
 
       //init other class files
       inputs.init(this);
+      img_gen.init();
 
       ice_pert_from = 7.0f;
       ice_pert_to = 10.0f;
@@ -230,8 +231,7 @@ namespace octet {
     void generate(bool from_image, bool random_seed){
 
 
-
-      int height = 5, width = 2;
+      
 
       //the mesh generatiion
       param_shader *shader = new param_shader("shaders/default.vs", "shaders/simple_color.fs");
@@ -239,8 +239,8 @@ namespace octet {
 
       mesh *terrain = new mesh();
       // allocate vertices and indices into OpenGL buffers
-      size_t num_vertices = height * width; //height * width (change this possibly)
-      size_t num_indices = 6 * (num_vertices - width) - 6 * height;
+      size_t num_vertices = height_image * width_image; //height * width (change this possibly)
+      size_t num_indices = 6 * (num_vertices - width_image) - 6 * height_image;
       terrain->allocate(sizeof(my_vertex)* num_vertices, sizeof(uint32_t)* num_indices);
       terrain->set_params(sizeof(my_vertex), num_indices, num_vertices, GL_TRIANGLES, GL_UNSIGNED_INT);
       // describe the structure of my_vertex to OpenGL
@@ -264,15 +264,20 @@ namespace octet {
       float temp_high = 0.0f;
 
       float min = 0.0f, max = 0.0f;
-      pn.fill_image(min, max, 16);
+      float *image =pn.fill_image(min, max, 16);
+      ///temp
+      
+
+      ///temp
+      img_gen.read("perlin_noise.ppm");
 
       // Visit every pixel of the image and assign a color generated with Perlin noise
-      for (int i = 0; i < height; ++i) {     // y
-        for (int j = 0; j < width; ++j) {  // x
-          float x = 1.0f * j / width;
-          float y = 1.0f * i / height;
+      for (int i = 0; i < height_image; ++i) {     // y
+        for (int j = 0; j < width_image; ++j) {  // x
+          float x = 1.0f * j / width_image;
+          float y = 1.0f * i / height_image;
 
-
+         
 
           //if (!from_image) {
           //  // Typical Perlin noise
@@ -293,11 +298,20 @@ namespace octet {
 
           //}
 
-          float colour_mesh = 0;
-          float vertex_height = colour_mesh * 30.0f;
-          vtx->pos = vec3p((float)j, vertex_height, (float)i);
-          vtx->nor = vec3p((float)j, vertex_height, (float)i);
-          if (use_colour_map)
+          float r = img_gen.r[kk] / 255.0f;
+          float g = img_gen.g[kk] / 255.0f;
+          float b = img_gen.b[kk] / 255.0f;
+          
+          vtx->pos = vec3p((float)j, *(image+j*width_image+i)*100.0f, (float)i);
+          vtx->nor = vec3p((float)j, *(image + j*width_image + i)*100.0f, (float)i);
+
+          vtx->color = make_color(1.0f, 1.0f, 0.0f);
+         // vtx->color = make_color(r, g, b);
+          vtx++;
+          kk++;
+          }
+          }
+          /*if (use_colour_map)
           {
             if (vertex_height >= water_pert_from && vertex_height <= water_pert_to)
               vtx->color = make_color(0.0f, 0.0f, 1.0f);
@@ -359,19 +373,19 @@ namespace octet {
           vtx++;
           kk++;
         }
-      }
+      }*/
       int tempvert = 0;
-      for (int i = 0; i < height - 1; ++i) {
-        for (int j = 0; j < width - 1; ++j) {
+      for (int i = 0; i < height_image - 1; ++i) {
+        for (int j = 0; j < width_image - 1; ++j) {
 
           idx[0] = tempvert;
           idx[1] = tempvert + 1;
-          idx[2] = tempvert + width + 1;
+          idx[2] = tempvert + width_image + 1;
           idx += 3;
 
           idx[0] = tempvert;
-          idx[1] = tempvert + width + 1;
-          idx[2] = tempvert + width;
+          idx[1] = tempvert + width_image + 1;
+          idx[2] = tempvert + width_image;
           idx += 3;
 
           tempvert++;

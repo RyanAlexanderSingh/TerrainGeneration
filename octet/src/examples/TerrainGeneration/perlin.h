@@ -19,8 +19,6 @@ namespace octet {
     perlin() {
     }
 
-    //const varibles for height and width of bmp image
-    static const unsigned height = 500, width = 500;
 
     int floor(float value)
     {
@@ -52,11 +50,11 @@ namespace octet {
       return (s * max);
     }
 
-    void fill_image(float &min, float &max, float _octaves)
+    float* fill_image(float &min, float &max, float _octaves)
     {
       bmp_image img_gen;
 
-      float image[height][width];//make the empty array 
+      float *image = new float[height_image*width_image];//make the empty array 
 
       //change this
       int xpos, ypos,
@@ -103,14 +101,14 @@ namespace octet {
       float amplitude = 0.0f;
       float frequency = 0.0f;
       float gain = 0.65f;
-      float lacunarity = 2.0f;
+      float lacunarity = 1.8715f;
       // Visit every pixel of the image and assign a color generated with Perlin noise and FBM
-      for (int i = 0; i < width; ++i)
+      for (int i = 0; i < width_image; ++i)
       {
-        for (int j = 0; j < height; ++j)
+        for (int j = 0; j < height_image; ++j)
         {
           amplitude = 1.0f;
-          frequency = 1.0f / (float)height;
+          frequency = 1.0f / (float)height_image;
           result = 0.0f;
           //depending on the number of octaves depends on how many layers we're putting together
           for (int kk = 0; kk < octaves; ++kk)
@@ -150,7 +148,7 @@ namespace octet {
           }
 
           //put it in the image
-          image[j][i] = result;
+          *(image+i*width_image+j) = result;
 
           if (result < min)
             min = result;
@@ -159,7 +157,12 @@ namespace octet {
             max = result;
         }
       }
+
+      //img_gen.write_greyscale_image(image, min, max);
       img_gen.write(image, min, max);
+    
+      return image;
+      //img_gen.write_ppm(image, min, max);
     }
   };
 }
