@@ -13,7 +13,7 @@ namespace octet {
   /// Scene containing a box with octet.
   class terrain_gen : public app {
 
-    bmp_image img;
+    //bmp_image img;
     perlin pn;
     inputs inputs;
 
@@ -228,18 +228,14 @@ namespace octet {
 
     void generate(bool from_image, bool random_seed){
       
-      const unsigned height = 500, width = 500;
-
-      float image[height][width];
-      float min, max;
-      pn.generate_noise(image, min, max, 16);
       
+
+      int height = 5, width =2;
 
       //the mesh generatiion
       param_shader *shader = new param_shader("shaders/default.vs", "shaders/simple_color.fs");
       material *red = new material(vec4(0.6f, 0.298f, 0.0f, 1.0f), shader);
 
-      int height = 500, width = 500; 
       mesh *terrain = new mesh();
       // allocate vertices and indices into OpenGL buffers
       size_t num_vertices = height * width; //height * width (change this possibly)
@@ -265,12 +261,19 @@ namespace octet {
 
       float temp_low = 1.0f;
       float temp_high = 0.0f;
+
+      float min = 0.0f, max = 0.0f;
+      pn.fill_image(min, max, 16);
+
+
+
       // Visit every pixel of the image and assign a color generated with Perlin noise
       for (int i = 0; i < height; ++i) {     // y
         for (int j = 0; j < width; ++j) {  // x
           float x = 1.0f * j / width;
           float y = 1.0f * i / height;
 
+          
 
           //if (!from_image) {
           //  // Typical Perlin noise
@@ -321,7 +324,7 @@ namespace octet {
               lowest_point = vertex_height;
             }
           }
-          vtx->color = make_color(ppm_image.pixel_colour[kk], ppm_image.pixel_colour[kk], ppm_image.pixel_colour[kk]);
+          //vtx->color = make_color(ppm_image.pixel_colour[kk], ppm_image.pixel_colour[kk], ppm_image.pixel_colour[kk]);
           vtx++;
           kk++;
         }

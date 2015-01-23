@@ -9,9 +9,8 @@
 
 #include "../../octet.h"
 
-#include "perlin.h"
 #include "bmp_image.h"
-#include "ppm.h"
+#include "perlin.h"
 #include "inputs.h"
 #include "terrain_gen.h"
 

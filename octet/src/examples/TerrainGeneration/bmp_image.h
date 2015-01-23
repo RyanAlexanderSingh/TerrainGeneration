@@ -7,9 +7,12 @@
 #ifndef BMP_IMAGE_H_INCLUDED
 #define BMP_IMAGE_H_INCLUDED
 
-#include <fstream>
+#include <cstdlib>
+#include <iostream>
 #include <exception>
-#include <sstream>
+#include <fstream>
+
+using namespace std;
 
 namespace octet {
   /// Scene containing a box with octet.
@@ -20,97 +23,136 @@ namespace octet {
     bmp_image() {
     }
 
-    //read a .ppm file heightmap
-    void read(std::string fname){
+    //colour structre for storing rgb values of each pixel
+    struct colour{
+      unsigned char v[3];
 
-      std::ifstream input(fname.c_str(), std::ios::in | std::ios::binary);
-      if (input.is_open()){
-        std::string line;
-        std::getline(input, line);
-        if (line != "P6"){
-          printf("Error! Unrecognized file format..Could not find 'P6' in the file.");
-          return;
-        }
-        std::getline(input, line);
-        while (line[0] == '#') {
-          std::getline(input, line);
-        }
-        std::stringstream dimensions(line);
+      colour(unsigned char r, unsigned char g, unsigned char b){
+        v[0] = r;
+        v[1] = g;
+        v[2] = b;
+      }
+    };
 
-        try {
-          dimensions >> width;
-          dimensions >> height;
-          nr_lines = height;
-          nr_columns = width;
-        }
-        catch (std::exception &e) {
-          printf("Header file format error. \n", e.what());
-          return;
-        }
+    //const varibles for height and width of bmp image
+    static const unsigned height = 500, width = 500;
 
-        std::getline(input, line);
-        std::stringstream max_val(line);
-        try {
-          max_val >> max_col_val;
+    colour lerpt(colour c1, colour c2, float value){
+      colour tcolor(0, 0, 0);
+
+      for (int g = 0; g<3; g++){
+        if (c1.v[g]>c2.v[g]){
+          tcolor.v[g] = c2.v[g] + (unsigned char)(float(c1.v[g] - c2.v[g])*value);
         }
-        catch (std::exception &e) {
-          printf("Header file format error. \n", e.what());
-          return;
-        }
-
-        size = width*height;
-
-        pixel_colour.resize(size);
-        pixel_colour.reserve(size);
-
-        char aux;
-        for (int i = 0; i < size; ++i) {
-          for (int j = 0; j < 3; ++j){
-            input.read(&aux, 1);
-            //the RGB colour values are stored together so we'll just take the last one (they're all the same)
-            if (j == 2){
-              pixel_colour[i] = (unsigned char)aux;
-            }
-          }
+        else{
+          tcolor.v[g] = c1.v[g] + (unsigned char)(float(c2.v[g] - c1.v[g])*value);
         }
       }
-      else {
-        printf("Error, unable to open %s", fname);
-      }
-      input.close();
+      return (tcolor);
     }
 
 
     //creates a file with a given name and writes to that text file with the generated perlin noise
-    void write(std::string fname){
+    void write(float image[][500], float &_min, float &_max){
 
-      const unsigned height = 650, width = 650;
-      float image[height][width];
-      
-      std::ofstream input(fname.c_str(), std::ios::out | std::ios::binary);
-      if (input.is_open()){
+      //set up some variables
+      float diff = _max - _min,
+        flood = 0.5f,//flood level
+        mount = 0.85f;//mountain level
 
-        //P6 complies with .ppm file formats
-        input << "P6\n";
-        input << width;
-        input << " ";
-        input << height << "\n";
-        input << max_col_val << "\n";
+      flood *= diff;
+      mount *= diff;
 
-        char aux;
-        for (int i = 0; i < size; ++i){
-          //run for loop three times for the R, G, B of each pixel
-          for (int j = 0; j < 3; ++j){
-            aux = (char)pixel_colour[i];
-            input.write(&aux, 1);
-          }
+      int i, j, k;
+
+      //these can be changed for interesting results
+      colour landlow(0, 64, 0),
+        landhigh(116, 182, 133),
+        waterlow(55, 0, 0),
+        waterhigh(106, 53, 0),
+        mountlow(147, 157, 167),
+        mounthigh(226, 223, 216);
+
+      //3.0 output to file
+      //3.1 Begin the file
+      //3.1.1 open output file
+      ofstream out;
+      out.open("tester.bmp", ofstream::binary);
+      if (!(out.is_open())){
+        printf("Cannot open the file...");
+        exit(0);
+      }
+
+      //3.1.2 copy the header
+      //3.1.2.1 magic number
+      out.put(char(66));
+      out.put(char(77));
+
+      //3.1.2.2 filsize/unused space
+      for (i = 0; i < 8; i++)
+        out.put(char(0));
+
+      //3.1.2.3 data offset
+      out.put(char(54));
+
+      //3.1.2.4 unused space
+      for (i = 0; i < 3; i++)
+        out.put(char(0));
+
+      //3.1.2.5 header size
+      out.put(char(40));
+
+      //3.1.2.6 unused space
+      for (i = 0; i < 3; i++)
+        out.put(char(0));
+
+      out.put(char(height % 256));
+      out.put(char((height >> 8) % 256));
+      out.put(char((height >> 16) % 256));
+      out.put(char((height >> 24) % 256));
+
+      out.put(char(width % 256));
+      out.put(char((width >> 8) % 256));
+      out.put(char((width >> 16) % 256));
+      out.put(char((width >> 24) % 256));
+
+      out.put(char(1));
+      out.put(char(0));
+
+      out.put(char(24));
+
+      for (i = 0; i < 25; i++){
+        out.put(char(0));
+      }
+
+      colour newcolor(0, 0, 0);
+      for (i = (width - 1); i >= 0; i--){
+        for (j = 0; j < height; j++){
+          image[j][i] -= _min;
+          //if this point is below the floodline...
+          if (image[j][i]<flood)
+            newcolor = lerpt(waterlow, waterhigh, image[j][i] / flood);
+
+          //if this is above the mountain line...
+          else if (image[j][i]>mount)
+            newcolor = lerpt(mountlow, mounthigh, (image[j][i] - mount) / (diff - mount));
+
+          //if this is regular land
+          else
+            newcolor = lerpt(landlow, landhigh, (image[j][i] - flood) / (mount - flood));
+
+          out.put(char(newcolor.v[0]));
+          out.put(char(newcolor.v[1]));
+          out.put(char(newcolor.v[2]));
         }
+        //null terminate the buffer
+        for (k = 0; k < (height % 4); k++)
+          out.put(char(0));
       }
-      else {
-        printf("Unable to open file: %s", fname);
+
+      //end the file (close it)
+      out.close();
       }
-      input.close();
-    }
   };
 }
 #endif

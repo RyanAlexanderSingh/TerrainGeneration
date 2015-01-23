@@ -433,9 +433,6 @@
     <ClInclude Include="terrain_gen.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="ppm.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="bmp_image.h">
       <Filter>Source Files</Filter>
     </ClInclude>
