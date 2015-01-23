@@ -10,7 +10,7 @@
 #include "../../octet.h"
 
 #include "perlin.h"
-#include "image.h"
+#include "bmp_image.h"
 #include "ppm.h"
 #include "inputs.h"
 #include "terrain_gen.h"

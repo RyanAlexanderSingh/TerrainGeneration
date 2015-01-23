@@ -4,8 +4,8 @@
 //
 // Main source is based off PPM.h by Sol of Solarian Programmer (https://solarianprogrammer.com/2011/12/16/cpp-11-thread-tutorial/)
 //
-#ifndef IMAGE_H_INCLUDED
-#define IMAGE_H_INCLUDED
+#ifndef BMP_IMAGE_H_INCLUDED
+#define BMP_IMAGE_H_INCLUDED
 
 #include <fstream>
 #include <exception>
@@ -13,23 +13,11 @@
 
 namespace octet {
   /// Scene containing a box with octet.
-  class image : public resource {
-    // scene for drawing box
+  class bmp_image : public resource {
     ref<visual_scene> app_scene;
   public:
     /// this is called when we construct the class before everything is initialised.
-    image() {
-    }
-
-    int width = 0, height = 0, size = 0, max_col_val = 255;
-
-
-    void init(unsigned _height, unsigned _width){
-      
-      //define height and width of the image (current set to 650)
-      const unsigned height = 500, width = 500;
-
-      float img[height][width];
+    bmp_image() {
     }
 
     //read a .ppm file heightmap
@@ -95,6 +83,10 @@ namespace octet {
 
     //creates a file with a given name and writes to that text file with the generated perlin noise
     void write(std::string fname){
+
+      const unsigned height = 650, width = 650;
+      float image[height][width];
+      
       std::ofstream input(fname.c_str(), std::ios::out | std::ios::binary);
       if (input.is_open()){
 

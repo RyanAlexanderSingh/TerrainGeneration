@@ -13,7 +13,7 @@ namespace octet {
   /// Scene containing a box with octet.
   class terrain_gen : public app {
 
-    ppm ppm_image;
+    bmp_image img;
     perlin pn;
     inputs inputs;
 
@@ -55,6 +55,8 @@ namespace octet {
       camera_mat.rotateX(0);
       InitDayNightCycle();
       initUI();
+
+      //init other class files
       inputs.init(this);
 
       ice_pert_from = 7.0f;
@@ -225,25 +227,22 @@ namespace octet {
     }
 
     void generate(bool from_image, bool random_seed){
+      
+      const unsigned height = 500, width = 500;
 
-      int height = 0, width = 0;
-
-      if (from_image){
-        ppm_image.read("p1.ppm");
-        height = ppm_image.height, width = ppm_image.width;
-      }
-      else{
-        height = 500, width = 500;
-        ppm_image.init(height, width);
-      }
+      float image[height][width];
+      float min, max;
+      pn.generate_noise(image, min, max, 16);
+      
 
       //the mesh generatiion
       param_shader *shader = new param_shader("shaders/default.vs", "shaders/simple_color.fs");
       material *red = new material(vec4(0.6f, 0.298f, 0.0f, 1.0f), shader);
 
+      int height = 500, width = 500; 
       mesh *terrain = new mesh();
       // allocate vertices and indices into OpenGL buffers
-      size_t num_vertices = height*width;
+      size_t num_vertices = height * width; //height * width (change this possibly)
       size_t num_indices = 6 * (num_vertices - width) - 6 * height;
       terrain->allocate(sizeof(my_vertex)* num_vertices, sizeof(uint32_t)* num_indices);
       terrain->set_params(sizeof(my_vertex), num_indices, num_vertices, GL_TRIANGLES, GL_UNSIGNED_INT);
@@ -273,26 +272,26 @@ namespace octet {
           float y = 1.0f * i / height;
 
 
-          if (!from_image) {
-            // Typical Perlin noise
-            float n = pn.generate_noise(x, y, 0.8f, 16, random_seed);
-            //cap the perlin noise to prevent it from going positive numbers
+          //if (!from_image) {
+          //  // Typical Perlin noise
+          //  float n = pn.generate_noise(x, y, 0.8f, 16, random_seed);
+          //  //cap the perlin noise to prevent it from going positive numbers
 
-            // Map the values to the [0, 255] interval, for simplicity we use tones of grey
-            ppm_image.pixel_colour[kk] = n;
+          //  // Map the values to the [0, 255] interval, for simplicity we use tones of grey
+          //  ppm_image.pixel_colour[kk] = n;
 
-            /*if (n < temp_low){
-              temp_low = n;
-              printf("low: %f \n ", temp_low);
-            }
-            if (n > temp_high){
-              temp_high = n;
-              printf(" high:  %f \n", temp_high);
-            }*/
+          //  /*if (n < temp_low){
+          //    temp_low = n;
+          //    printf("low: %f \n ", temp_low);
+          //  }
+          //  if (n > temp_high){
+          //    temp_high = n;
+          //    printf(" high:  %f \n", temp_high);
+          //  }*/
 
-          }
+          //}
 
-          float colour_mesh = (float)ppm_image.pixel_colour[kk];
+          float colour_mesh = 0;
           float vertex_height = colour_mesh * 30.0f;
           vtx->pos = vec3p((float)j, vertex_height, (float)i);
           vtx->nor = vec3p((float)j, vertex_height, (float)i);
@@ -384,7 +383,7 @@ namespace octet {
       app_scene->add_child(node);
       app_scene->add_mesh_instance(new mesh_instance(node, terrain, red));
 
-      ppm_image.write("perlin_noise.ppm");
+      //ppm_image.write("perlin_noise.ppm");
     }
 
 

@@ -436,7 +436,7 @@
     <ClInclude Include="ppm.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="image.h">
+    <ClInclude Include="bmp_image.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
