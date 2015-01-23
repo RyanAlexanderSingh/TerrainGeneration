@@ -50,11 +50,8 @@ namespace octet {
       return (s * max);
     }
 
-    float* fill_image(float &min, float &max, float _octaves)
-    {
-      bmp_image img_gen;
-
-      float *image = new float[height_image*width_image];//make the empty array 
+    void fill_image(float *image,float &min, float &max, float _octaves)
+    {       
 
       //change this
       int xpos, ypos,
@@ -103,9 +100,9 @@ namespace octet {
       float gain = 0.65f;
       float lacunarity = 1.8715f;
       // Visit every pixel of the image and assign a color generated with Perlin noise and FBM
-      for (int i = 0; i < width_image; ++i)
+      for (int i = 0; i < height_image; ++i)
       {
-        for (int j = 0; j < height_image; ++j)
+        for (int j = 0; j < width_image; ++j)
         {
           amplitude = 1.0f;
           frequency = 1.0f / (float)height_image;
@@ -149,6 +146,7 @@ namespace octet {
 
           //put it in the image
           *(image+i*width_image+j) = result;
+          //printf("\n\nThe value produced is : %f", *(image + i*width_image + j));
 
           if (result < min)
             min = result;
@@ -156,13 +154,8 @@ namespace octet {
           else if (result > max)
             max = result;
         }
-      }
-
-      //img_gen.write_greyscale_image(image, min, max);
-      img_gen.write(image, min, max);
-    
-      return image;
-      //img_gen.write_ppm(image, min, max);
+      }        
+          
     }
   };
 }
