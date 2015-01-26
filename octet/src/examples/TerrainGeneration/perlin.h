@@ -2,7 +2,7 @@
 //
 // (C) Ryan Singh and Himanshu Chablani
 //
-// SOURCE INFORMATION HERE
+// Ken Perlin Noise Function is largely sourced and derived from Ken Perlin's Improved Noise paper  
 //
 
 #include <time.h>
