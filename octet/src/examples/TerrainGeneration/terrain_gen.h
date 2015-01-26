@@ -51,20 +51,20 @@ namespace octet {
         generate(false, true);
         Game_UI.setup_pop_up(4);
       }
-      if (inputs.R_KEY()){
-        Game_UI.setup_pop_up(2);
-        Game_UI.terrain_type = 1;
-        app_scene->pop_mesh_instance();
-        generate(true, false);
-        Game_UI.setup_pop_up(4);
-      }
-      if (inputs.P_KEY()){
-        Game_UI.setup_pop_up(3);
-        Game_UI.terrain_type = 2;
-        app_scene->pop_mesh_instance();
-        generate(false, false);
-        Game_UI.setup_pop_up(4);
-      }
+      //if (inputs.R_KEY()){
+      //  Game_UI.setup_pop_up(2);
+      //  Game_UI.terrain_type = 1;
+      //  app_scene->pop_mesh_instance();
+      //  generate(true, false);
+      //  Game_UI.setup_pop_up(4);
+      //}
+      //if (inputs.P_KEY()){
+      //  Game_UI.setup_pop_up(3);
+      //  Game_UI.terrain_type = 2;
+      //  app_scene->pop_mesh_instance();
+      //  generate(false, false);
+      //  Game_UI.setup_pop_up(4);
+      //}
 
       if (inputs.G_KEY())
       {
@@ -94,74 +94,7 @@ namespace octet {
         }
 
       }
-      /*
-      if (is_key_down(key::key_up))
-      {
-      switch (selected_attrib)
-      {
-      case 0: if (ice_pert_from <= ice_pert_to && ice_pert_from >= 0.0f)
-      ice_pert_from += 0.01f;
-      break;
-      case 1:
-      ice_pert_to += 0.01f;
-      break;
 
-      case 2:
-      if (water_pert_from <= water_pert_to)
-      water_pert_from += 0.01f;
-      break;
-      case 3:
-      if (water_pert_to <= grass_pert_from)
-      water_pert_to += 0.01f;
-      break;
-
-      case 4:
-      if (grass_pert_from <= grass_pert_to)
-      {
-      grass_pert_from += 0.01f;
-      }
-      break;
-
-      case 5:
-      if (grass_pert_to <= ice_pert_from)
-      {
-      grass_pert_to += 0.01f;
-      }
-      break;
-      }
-      }
-
-      if (is_key_down(key::key_down))
-      {
-      switch (selected_attrib)
-      {
-      case 0: if (ice_pert_from >= grass_pert_to)
-      ice_pert_from -= 0.01f;
-      break;
-      case 1:if (ice_pert_to >= ice_pert_from)
-      ice_pert_to -= 0.01f;
-      break;
-      case 2:if (water_pert_from >= 0.01f)
-      water_pert_from -= 0.01f;
-      break;
-      case 3: if (Game_UI.water_pert_to >= water_pert_from)
-      {
-      Game_UI.water_pert_to -= 0.01f;
-      }
-      break;
-      case 4: if (Game_UI.grass_pert_from >= Game_UI.water_pert_to)
-      {
-      Game_UI.grass_pert_from -= 0.01f;
-      }
-      break;
-      case 5: if (grass_pert_to >= Game_UI.grass_pert_from)
-      {
-      grass_pert_to -= 0.01f;
-      }
-      break;
-      }
-      }
-      */
       if (is_key_going_up(key::key_right))
       {
         if (Game_UI.selected_attrib == 3)

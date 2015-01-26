@@ -108,7 +108,8 @@ namespace octet {
       }
       UI_bot->clear();
       UI_bot->format(
-        "Current Terrain Type : %s   Press G to regenerate, Press Q To Generate Random Terrain, Press R To Generate Example Heightmap, Press P To Generate Heightmap Based On Ken Perlin's Default Permutation Table", current_element);
+        //"Current Terrain Type : %s   Press G to regenerate, Press Q To Generate Random Terrain, Press R To Generate Example Heightmap, Press P To Generate Heightmap Based On Ken Perlin's Default Permutation Table", current_element);
+      "Current Terrain Type : %s   Press Q to generate a random height map!", current_element);
       // convert it to a mesh.
       UI_bot->update();
 
