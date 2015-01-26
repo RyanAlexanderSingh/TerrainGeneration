@@ -1,7 +1,6 @@
 #ifndef UI_INCLUDED
 #define UI_H_INCLUDED
 
-
 namespace octet {
   
   class UI : public resource{
