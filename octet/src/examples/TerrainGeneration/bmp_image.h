@@ -2,7 +2,8 @@
 //
 // (C) Ryan Singh and Himanshu Chablani
 //
-// note source
+// Ken Perlin Noise Function is largely sourced and derived from Ken Perlin's Improved Noise paper 
+// Travis Archer has also been sourced where appropriate
 //
 
 #ifndef BMP_IMAGE_H_INCLUDED
@@ -30,6 +31,7 @@ namespace octet {
         v[2] = b;
       }
     };
+    //SOURCED: TRAVIS ARCHER
     colour lerp(colour c1, colour c2, float value){
       colour tcolor(0, 0, 0);
 
@@ -43,6 +45,7 @@ namespace octet {
       }
       return (tcolor);
     }
+
     vec3 create_colour(float &image, float &_min, float &_max){
       //set up some variables
       float diff = _max - _min,
