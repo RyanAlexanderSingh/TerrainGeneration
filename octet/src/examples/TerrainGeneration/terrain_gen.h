@@ -306,17 +306,19 @@ namespace octet {
         printf("The file is corrupt");        
        // exit(0);
         }
+        delete []line;
       }
       // Visit every pixel of the image and assign a color generated with Perlin noise
       for (int i = 0; i < height_image; ++i) {     // z
         for (int j = 0; j < width_image; ++j) {  // x
           if (!from_image)
           {
-            float vert_height = *(image + i*width_image + j)*100.0f;
-            vtx->pos = vec3p((float)j, vert_height, (float)i);
-            vtx->nor = vec3p((float)j, vert_height, (float)i);
+            
             vec3 mesh_colour = img_gen.create_colour(*(image + i*width_image + j), min, max);
             vtx->color = make_color(mesh_colour.x(), mesh_colour.y(), mesh_colour.z());
+            float vert_height = *(image + i*width_image + j)*100.0f;
+            vtx->pos = vec3p((float)j, vert_height, (float)i);
+            vtx->nor = vec3p((float)j, vert_height, (float)i);            
             s.put(char(mesh_colour.z() * 255));
             s.put(char(mesh_colour.y() * 255));
             s.put(char(mesh_colour.x() * 255));
