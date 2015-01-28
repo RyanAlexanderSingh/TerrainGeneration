@@ -51,20 +51,20 @@ namespace octet {
         generate(false, true);
         Game_UI.setup_pop_up(4);
       }
-      if (inputs.R_KEY()){
-        Game_UI.setup_pop_up(2);
-        Game_UI.terrain_type = 1;
-        app_scene->pop_mesh_instance();
-        generate(true, false);
-        Game_UI.setup_pop_up(4);
-      }
-      if (inputs.P_KEY()){
-        Game_UI.setup_pop_up(3);
-        Game_UI.terrain_type = 2;
-        app_scene->pop_mesh_instance();
-        generate(false, false);
-        Game_UI.setup_pop_up(4);
-      }
+      //if (inputs.R_KEY()){
+      //  Game_UI.setup_pop_up(2);
+      //  Game_UI.terrain_type = 1;
+      //  app_scene->pop_mesh_instance();
+      //  generate(true, false);
+      //  Game_UI.setup_pop_up(4);
+      //}
+      //if (inputs.P_KEY()){
+      //  Game_UI.setup_pop_up(3);
+      //  Game_UI.terrain_type = 2;
+      //  app_scene->pop_mesh_instance();
+      //  generate(false, false);
+      //  Game_UI.setup_pop_up(4);
+      //}
 
       if (inputs.G_KEY())
       {
@@ -94,6 +94,7 @@ namespace octet {
         }
 
       }
+
       if (is_key_going_up(key::key_right))
       {
         if (Game_UI.selected_attrib == 3)
@@ -233,21 +234,24 @@ namespace octet {
         char *line = new char[54];
         grey_read.read(line,54);
         printf("The line was %s",line);
-        if (line[0] == 'B'&&line[1] == 'M')
+        if (line!="BM")
         {
         printf("The file is corrupt");        
+       // exit(0);
         }
+        delete []line;
       }
       // Visit every pixel of the image and assign a color generated with Perlin noise
       for (int i = 0; i < height_image; ++i) {     // z
         for (int j = 0; j < width_image; ++j) {  // x
           if (!from_image)
           {
-            float vert_height = *(image + i*width_image + j)*100.0f;
-            vtx->pos = vec3p((float)j, vert_height, (float)i);
-            vtx->nor = vec3p((float)j, vert_height, (float)i);
+            
             vec3 mesh_colour = img_gen.create_colour(*(image + i*width_image + j), min, max);
             vtx->color = make_color(mesh_colour.x(), mesh_colour.y(), mesh_colour.z());
+            float vert_height = *(image + i*width_image + j)*100.0f;
+            vtx->pos = vec3p((float)j, vert_height, (float)i);
+            vtx->nor = vec3p((float)j, vert_height, (float)i);            
             s.put(char(mesh_colour.z() * 255));
             s.put(char(mesh_colour.y() * 255));
             s.put(char(mesh_colour.x() * 255));
@@ -262,7 +266,7 @@ namespace octet {
             grey_read.read(&aux, 1);
             grey_read.read(&aux, 1);
 
-            float vert_height = ((float)((aux*100.0f))/255.0f);
+            float vert_height = (float)((aux*100.0f)/255.0f);
             vtx->pos = vec3p((float)j, vert_height, (float)i);
             vtx->nor = vec3p((float)j, vert_height, (float)i);
             vec3 mesh_colour = img_gen.create_colour(*(image + i*width_image + j), min, max);

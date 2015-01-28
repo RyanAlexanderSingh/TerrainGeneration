@@ -2,7 +2,7 @@
 //
 // (C) Ryan Singh and Himanshu Chablani
 //
-// SOURCE INFORMATION HERE
+// Ken Perlin Noise Function is largely sourced and derived from Ken Perlin's Improved Noise paper  
 //
 
 #include <time.h>
@@ -19,22 +19,24 @@ namespace octet {
     perlin() {
     }
 
-
+    //simple floor function
     int floor(float value)
     {
       return (value >= 0 ? (int)value : (int)value - 1);
     }
 
+    //used to find out the dot product between the gradient vector and the distance vector
     float dotproduct(float grad[], float x, float y)
     {
       return (grad[0] * x + grad[1] * y);
     }
 
+    //linear interpolation between these two points
     float lerp(float t, float a, float b)
     {
       return ((1 - b) * t + b * a);
     }
-
+    //fade or ease curve to produce a smoother interpolation between integral coordinates
     float fade(float t){
       return t * t * t * (t * (t * 6 - 15) + 10);
     }
@@ -54,8 +56,7 @@ namespace octet {
     {       
 
       //change this
-      int xpos, ypos,
-        grad11, grad12, grad21, grad22;
+      int xpos, ypos, grad11, grad12, grad21, grad22;
 
       //number of times to iterate through the fbm loop
       int octaves = _octaves;
@@ -144,9 +145,8 @@ namespace octet {
             frequency *= lacunarity; //increase the frequency each octave 
           }
 
-          //put it in the image
+          //put it in our image
           *(image+i*width_image+j) = result;
-          //printf("\n\nThe value produced is : %f", *(image + i*width_image + j));
 
           if (result < min)
             min = result;
