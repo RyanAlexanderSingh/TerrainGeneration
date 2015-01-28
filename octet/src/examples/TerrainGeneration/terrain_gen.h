@@ -94,74 +94,6 @@ namespace octet {
         }
 
       }
-      /*
-      if (is_key_down(key::key_up))
-      {
-      switch (selected_attrib)
-      {
-      case 0: if (ice_pert_from <= ice_pert_to && ice_pert_from >= 0.0f)
-      ice_pert_from += 0.01f;
-      break;
-      case 1:
-      ice_pert_to += 0.01f;
-      break;
-
-      case 2:
-      if (water_pert_from <= water_pert_to)
-      water_pert_from += 0.01f;
-      break;
-      case 3:
-      if (water_pert_to <= grass_pert_from)
-      water_pert_to += 0.01f;
-      break;
-
-      case 4:
-      if (grass_pert_from <= grass_pert_to)
-      {
-      grass_pert_from += 0.01f;
-      }
-      break;
-
-      case 5:
-      if (grass_pert_to <= ice_pert_from)
-      {
-      grass_pert_to += 0.01f;
-      }
-      break;
-      }
-      }
-
-      if (is_key_down(key::key_down))
-      {
-      switch (selected_attrib)
-      {
-      case 0: if (ice_pert_from >= grass_pert_to)
-      ice_pert_from -= 0.01f;
-      break;
-      case 1:if (ice_pert_to >= ice_pert_from)
-      ice_pert_to -= 0.01f;
-      break;
-      case 2:if (water_pert_from >= 0.01f)
-      water_pert_from -= 0.01f;
-      break;
-      case 3: if (Game_UI.water_pert_to >= water_pert_from)
-      {
-      Game_UI.water_pert_to -= 0.01f;
-      }
-      break;
-      case 4: if (Game_UI.grass_pert_from >= Game_UI.water_pert_to)
-      {
-      Game_UI.grass_pert_from -= 0.01f;
-      }
-      break;
-      case 5: if (grass_pert_to >= Game_UI.grass_pert_from)
-      {
-      grass_pert_to -= 0.01f;
-      }
-      break;
-      }
-      }
-      */
       if (is_key_going_up(key::key_right))
       {
         if (Game_UI.selected_attrib == 3)
@@ -301,10 +233,9 @@ namespace octet {
         char *line = new char[54];
         grey_read.read(line,54);
         printf("The line was %s",line);
-        if (line!="BM")
+        if (line[0] == 'B'&&line[1] == 'M')
         {
         printf("The file is corrupt");        
-       // exit(0);
         }
       }
       // Visit every pixel of the image and assign a color generated with Perlin noise
@@ -331,7 +262,7 @@ namespace octet {
             grey_read.read(&aux, 1);
             grey_read.read(&aux, 1);
 
-            float vert_height = (float)((aux*100.0f)/255.0f);
+            float vert_height = ((float)((aux*100.0f))/255.0f);
             vtx->pos = vec3p((float)j, vert_height, (float)i);
             vtx->nor = vec3p((float)j, vert_height, (float)i);
             vec3 mesh_colour = img_gen.create_colour(*(image + i*width_image + j), min, max);
