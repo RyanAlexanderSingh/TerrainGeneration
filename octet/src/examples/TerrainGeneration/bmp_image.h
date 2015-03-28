@@ -65,7 +65,7 @@ namespace octet {
         grasshigh(133, 182, 116),
         waterlow(0, 0, 55), //done
         waterhigh(0, 53, 106), //done
-        mountlow(167, 157, 147), //done
+        mountlow(137, 130, 127), //done
         mounthigh(255, 240, 214); //done
       colour pxl_colour(0, 0, 0);
       if (image < flood)

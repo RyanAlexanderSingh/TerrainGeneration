@@ -209,7 +209,7 @@ namespace octet {
       float *image = new float[height_image*width_image];
       ofstream grey;
       ofstream s;
-      ifstream grey_read("Height_Map.bmp", std::ios::in | std::ios::binary);
+      ifstream grey_read("height_map.bmp", std::ios::in | std::ios::binary);
 
       if (!from_image)
       {
@@ -249,7 +249,7 @@ namespace octet {
             
             vec3 mesh_colour = img_gen.create_colour(*(image + i*width_image + j), min, max);
             vtx->color = make_color(mesh_colour.x(), mesh_colour.y(), mesh_colour.z());
-            float vert_height = *(image + i*width_image + j)*100.0f;
+            float vert_height = *(image + i*width_image + j)*60.0f;
             vtx->pos = vec3p((float)j, vert_height, (float)i);
             vtx->nor = vec3p((float)j, vert_height, (float)i);            
             s.put(char(mesh_colour.z() * 255));
